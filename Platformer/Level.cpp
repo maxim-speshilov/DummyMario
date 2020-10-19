@@ -31,6 +31,12 @@ vector <Object> Level::getObjectsByType(string type) const{
 	return result;
 }
 
+Object Level::getFirstObject(string type) const {
+	for (Object object : objects)
+		if (object.type == type)
+			return object;
+}
+
 vector <Object> Level::getAllObjects() const{
 	return objects;
 }
@@ -110,7 +116,6 @@ bool Level::loadFromXmlFile(const char* filename){
 					sprite.setPosition(j*tileSize.first, i*tileSize.second);
 					sprite.setTextureRect(tileRects[tileGID - firstTileGID]);
 					sprite.setColor(sf::Color(255, 255, 255, layer.opacity));
-
 					layer.tileset.push_back(sprite);
 					tileElement = tileElement->NextSiblingElement("tile");
 				}

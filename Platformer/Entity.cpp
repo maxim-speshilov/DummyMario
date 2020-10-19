@@ -101,6 +101,21 @@ void Player::mapProcessing(int direction){
 						rect.left = object.rect.left - object.rect.width;
 				}
 			}
+
+			if (object.type == "SlopeRight") {
+				if (direction == 1) {
+					if (speed.y > 0) {
+						rect.top = object.rect.top - rect.height;
+						speed.y *= 0.4472;
+						isOnGround = true;
+						state = Sliding;
+					}
+
+					if (speed.y < 0) {
+						;
+					}
+				}
+			}
 		}
 	}
 }

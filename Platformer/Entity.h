@@ -17,8 +17,8 @@ protected:
 	float currentFrame;
 	FloatRect rect;
 	bool isOnGround, isSizeChanged;
-	enum MoveDirection { Right, Left } direction;
-	enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Dead} state;
+	enum MoveDirection { Right, Left, Up, Down } direction;
+	enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead} state;
 	AnimationEditor editor;
 	vector <Object> levelObjects;
 	string type;
