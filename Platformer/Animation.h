@@ -31,4 +31,5 @@ public:
 	void set_isReflex(bool);
 	void shiftAnimation(float);
 	void drawAnimation(RenderWindow&, int, int);
+	void drawAnimation(RenderTexture&, int x, int y);
 };

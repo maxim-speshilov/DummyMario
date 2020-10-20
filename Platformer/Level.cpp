@@ -47,6 +47,12 @@ void Level::draw(sf::RenderWindow &window) const{
 			window.draw(tile);
 }
 
+void Level::draw(sf::RenderTexture &rt) const {
+	for (Layer layer : layers)
+		for (sf::Sprite tile : layer.tileset)
+			rt.draw(tile);
+}
+
 bool Level::loadFromXmlFile(const char* filename){
 	TiXmlDocument levelFile(filename);
 	if (!levelFile.LoadFile())

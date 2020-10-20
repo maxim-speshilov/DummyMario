@@ -41,6 +41,7 @@ public:
 	Size getSize() const;
 	int getSpacing() const;
 	void draw(sf::RenderWindow&) const;
+	void draw(sf::RenderTexture&) const;
 };
 
 

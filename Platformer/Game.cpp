@@ -42,7 +42,8 @@ bool gameLoop(){
 		Font font;
 		font.loadFromFile("SuperMario256.ttf");
 		Text money(String("0"), font);
-		money.setPosition(0, 0);
+		money.setPosition(8, 8);
+		money.setFillColor(Color::White);
 
 		unsigned int screenWidth = 480;
 		unsigned int screenHeight = level.getSize().second * level.getTileSize().second;
@@ -157,7 +158,7 @@ bool gameLoop(){
 				view.setCenter(player.rect.left + 50, player.rect.top);
 			}
 
-			
+
 
 			for (it = entities.begin(); it != entities.end();) {
 				(*it)->update(time);
@@ -191,14 +192,14 @@ bool gameLoop(){
 							player.speed.y = 0;
 						}
 					}
+
 				}
 			}
 
+			window.clear(Color::Black);
 			window.setView(view);
 
-			window.clear(Color::Black);
-
-			level.draw(window);	
+			level.draw(window);
 
 			player.editor.drawAnimation(window, player.rect.left, player.rect.top);
 
@@ -206,9 +207,11 @@ bool gameLoop(){
 				(*it)->editor.drawAnimation(window, (*it)->rect.left, (*it)->rect.top);
 
 			window.setView(window.getDefaultView());
+
 			window.draw(money);
 
 			window.display();
+
 		}
 	}
 }
