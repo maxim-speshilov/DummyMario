@@ -16,7 +16,7 @@ GameSettings settings;
 bool gameLoop(){
 
 	for (auto levelFileName : settings.levelsFileNames) {
-		
+
 		bool boo = false, boo1 = false;
 
 		Level level;
@@ -39,11 +39,12 @@ bool gameLoop(){
 		jump.setBuffer(buffer);
 		jump.setVolume(50);
 
+		int money = 0;
 		Font font;
 		font.loadFromFile("SuperMario256.ttf");
-		Text money(String("0"), font);
-		money.setPosition(8, 8);
-		money.setFillColor(Color::White);
+		Text money_text(String("0"), font);
+		money_text.setPosition(8, 8);
+		money_text.setFillColor(Color::White);
 
 		unsigned int screenWidth = 480;
 		unsigned int screenHeight = level.getSize().second * level.getTileSize().second;
@@ -53,18 +54,19 @@ bool gameLoop(){
 		View view;
 		view.reset(sf::FloatRect(0, 0, screenWidth, screenHeight));
 
-		Texture t1, t2, t3;
+		Texture running_set, rolling_set, jumping_set;
 		Player player(level, { level.getObjectsByType("player").at(0).rect.left, level.getObjectsByType("player").at(0).rect.top }, 23, 28);
 
-		t1.loadFromFile("run_set.png"); t2.loadFromFile("rolling_set.png"), t3.loadFromFile("jump_set.png");
-		player.editor.addAnimation("Running", t1, 0, 0, 23, 28, 8, 0.005, 23);
-		player.editor.addAnimation("Staying", t1, 0, 0, 23, 28, 1, 0, 0);
-		player.editor.addAnimation("Rolling", t2, 0, 0, 22, 28, 8, 0.02, 22);
-		player.editor.addAnimation("Jumping", t3, 0, 0, 24, 28, 4, 0.005, 24);
+		running_set.loadFromFile("run_set.png"); rolling_set.loadFromFile("rolling_set.png"), jumping_set.loadFromFile("jump_set.png");
+		player.editor.addAnimation("Running", running_set, 0, 0, 23, 28, 8, 0.005, 23);
+		player.editor.addAnimation("Staying", running_set, 0, 0, 23, 28, 1, 0, 0);
+		player.editor.addAnimation("Rolling", rolling_set, 0, 0, 22, 28, 8, 0.02, 22);
+		player.editor.addAnimation("Jumping", jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
 
-		Texture t4, t5;
-		t4.loadFromFile("enemy_set.png");	
-		t5.loadFromFile("moving_platform.png");
+		Texture enemy_set, moving_platform_set, coin_set;
+		enemy_set.loadFromFile("enemy_set.png");	
+		moving_platform_set.loadFromFile("moving_platform.png");
+		coin_set.loadFromFile("coin.png");
 
 		std::list <Entity*> entities;
 		std::list <Entity*>::iterator it;
@@ -72,6 +74,8 @@ bool gameLoop(){
 		vector <Object> enemys = level.getObjectsByType("enemy");
 
 		vector <Object> movingPlatforms = level.getObjectsByType("moving platform");
+
+		vector <Object> coins = level.getObjectsByType("coin");
 
 		if (enemys.size() != 0) {
 			for (int i = 0; i < enemys.size(); i++) {
@@ -91,18 +95,28 @@ bool gameLoop(){
 			}
 		}
 
-		for (it = entities.begin(); it != entities.end(); it++) {
-			if ((*it)->type == "enemy") {
-				(*it)->editor.addAnimation("Running", t4, 0, 25, 16, 16, 2, 0.005, 16);
-				(*it)->editor.addAnimation("Dead", t4, 34, 33, 16, 8, 1, 0, 0);
-			}
-
-			if ((*it)->type == "moving platform") {
-				(*it)->editor.addAnimation("Moving", t5, 0, 0, 96, 32, 1, 0, 0);
+		if (coins.size() != 0) {
+			for (int i = 0; i < coins.size(); i++) {
+				entities.push_front(new Coin(level, Vector2f(coins[i].rect.left, coins[i].rect.top), 32, 32));
 			}
 		}
 
-		main_theme.play();
+		for (it = entities.begin(); it != entities.end(); it++) {
+			if ((*it)->type == "enemy") {
+				(*it)->editor.addAnimation("Running", enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
+				(*it)->editor.addAnimation("Dead", enemy_set, 34, 33, 16, 8, 1, 0, 0);
+			}
+
+			if ((*it)->type == "moving platform") {
+				(*it)->editor.addAnimation("Moving", moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
+			}
+
+			if ((*it)->type == "coin") {
+				(*it)->editor.addAnimation("Spinning", coin_set, 0, 0, 32, 32, 4, 0.008, 32);
+			}
+		}
+
+		//main_theme.play();
 		main_theme.setLoop(true);
 
 		Clock clock;
@@ -116,8 +130,10 @@ bool gameLoop(){
 			Event event;
 			while (window.pollEvent(event))
 			{
-				if ((event.type == Event::Closed))
+				if ((event.type == Event::Closed)) {
 					window.close();
+					return false;
+				}
 			}
 
 			if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A)) {
@@ -192,6 +208,11 @@ bool gameLoop(){
 							player.speed.y = 0;
 						}
 					}
+					else if ((*it)->type == "coin") {
+						(*it)->state = Entity::Dead;
+						money += 100;
+						money_text.setString(to_string(money));
+					}
 
 				}
 			}
@@ -208,7 +229,7 @@ bool gameLoop(){
 
 			window.setView(window.getDefaultView());
 
-			window.draw(money);
+			window.draw(money_text);
 
 			window.display();
 

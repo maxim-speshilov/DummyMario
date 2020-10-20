@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="58">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="61">
  <tileset firstgid="1" source="tiles3.tsx"/>
  <objectgroup id="2" name="Слой объектов 1">
   <object id="2" type="Solid" x="576" y="448.125" width="96.125" height="96"/>
@@ -64,6 +64,9 @@
     <property name="Direction" value="Right"/>
    </properties>
   </object>
+  <object id="58" name="Coin" type="coin" x="191.864" y="175.5" width="32" height="32"/>
+  <object id="59" x="76.5" y="153"/>
+  <object id="60" x="12" y="304.5"/>
  </objectgroup>
  <layer id="5" name="Слой тайлов 1" width="50" height="20">
   <data>

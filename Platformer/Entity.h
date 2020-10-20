@@ -17,7 +17,7 @@ protected:
 	float currentFrame;
 	FloatRect rect;
 	bool isOnGround, isSizeChanged;
-	enum MoveDirection { Right, Left, Up, Down } direction;
+	enum MoveDirection { Nowhere, Right, Left, Up, Down } direction;
 	enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead} state;
 	AnimationEditor editor;
 	vector <Object> levelObjects;
@@ -50,5 +50,12 @@ private:
 	float timeToTurn;
 public:
 	MovingPlatform (Level&, Vector2f, int, int);
-	void update(float);
+	void update(float) override;
+	void mapProcessing();
+};
+
+class Coin : public Entity {
+public:
+	Coin (Level&, Vector2f, int, int);
+	void update(float) override;
 };

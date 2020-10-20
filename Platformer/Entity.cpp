@@ -228,7 +228,7 @@ void Player::keyboardWork(){
 }
 
 Enemy::Enemy(Level& level, Vector2f position, int width, int height, MoveDirection direction):
-Entity(level, position, width, height){
+	Entity(level, position, width, height){
 	state = Running;
 	type = "enemy";
 	this->direction = direction;
@@ -281,7 +281,7 @@ void Enemy::mapProcessing(){
 }
 
 MovingPlatform::MovingPlatform(Level& level, Vector2f position, int width, int height) :
-Entity(level, position, width, height){
+	Entity(level, position, width, height){
 	speed = Vector2f(0.1, 0);
 	direction = Right;
 	type = "moving platform";
@@ -301,5 +301,16 @@ void MovingPlatform::update(float time){
 }
 
 
+Coin::Coin(Level& level, Vector2f position, int width, int height) :
+	Entity(level, position, width, height) {
+	speed = Vector2f(0, 0);
+	direction = Nowhere;
+	type = "coin";
+
+}
 
 
+void Coin::update(float time) {
+	editor.setAnimation("Spinning");
+	editor.shiftAnimation(time);
+}
