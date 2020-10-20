@@ -5,6 +5,12 @@ Entity::Entity(Level& level, Vector2f pos, int width, int height){
 	rect = FloatRect(pos.x, pos.y, width, height);
 }
 
+MoveDirection Entity::getDirection() {
+	return this->direction;
+}
+
+// TODO: Sliding processing while being on slope  
+
 void Player::mapProcessing(int direction){
 
 	for (Object object : levelObjects){
@@ -56,7 +62,7 @@ void Player::mapProcessing(int direction){
 			if (object.type == "JumpSuperBooster"){
 				if (direction == 1){
 					if (speed.y > 0){
-						speed.y = -1.2;
+						speed.y = -1.;
 					}
 
 					else if (speed.y < 0) {
@@ -130,8 +136,9 @@ Entity(level, pos, width, height){
 
 void Player::update(float time){
 
-	if (speed.y != 0)
+	if (speed.y != 0) {
 		state = Jumping;
+	}
 
 	keyboardProcessing();
 
@@ -266,16 +273,18 @@ void Enemy::update(float time){
 void Enemy::mapProcessing(){
 
 	for (Object object : levelObjects)
-		if (rect.intersects(object.rect)){
-			if (direction == Right){
-				rect.left = object.rect.left - rect.width;
-				direction = Left;
-				speed.x *= -1;
-			}
-			else {
-				rect.left = object.rect.left + object.rect.width;
-				direction = Right;
-				speed.x *= -1;
+		if (rect.intersects(object.rect)) {
+			if (object.type == "Solid") {
+				if (direction == Right) {
+					rect.left = object.rect.left - rect.width;
+						direction = Left;
+						speed.x *= -1;
+				}
+				else {
+					rect.left = object.rect.left + object.rect.width;
+						direction = Right;
+						speed.x *= -1;
+				}
 			}
 		}
 }
@@ -300,13 +309,16 @@ void MovingPlatform::update(float time){
 	editor.shiftAnimation(time);
 }
 
+void MovingPlatform::mapProcessing()
+{
+}
+
 
 Coin::Coin(Level& level, Vector2f position, int width, int height) :
 	Entity(level, position, width, height) {
 	speed = Vector2f(0, 0);
 	direction = Nowhere;
 	type = "coin";
-
 }
 
 

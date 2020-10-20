@@ -11,23 +11,28 @@
 
 using namespace sf;
 
+enum MoveDirection { Nowhere, Right, Left, Up, Down };
+enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead };
+
 class Entity{
 protected:
 	Vector2f speed;
 	float currentFrame;
 	FloatRect rect;
 	bool isOnGround, isSizeChanged;
-	enum MoveDirection { Nowhere, Right, Left, Up, Down } direction;
-	enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead} state;
+	MoveDirection direction;
+	enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead } state;
 	AnimationEditor editor;
 	vector <Object> levelObjects;
 	string type;
 public:
 	Entity(Level&, Vector2f, int, int);
+	MoveDirection getDirection();
 	virtual void update(float) = 0;
 	friend bool gameLoop();
 };
 
+// TODO(me): Fix position bug that happens when resizing window.
 class Player : public Entity {
 public:
 	Player(Level&, Vector2f, int, int);
@@ -38,6 +43,7 @@ public:
 	void keyboardProcessing();
 };
 
+
 class Enemy : public Entity{
 public:
 	Enemy(Level&, Vector2f, int, int, MoveDirection);
@@ -45,6 +51,7 @@ public:
 	void mapProcessing();
 };
 
+// TODO(me): add mapProcessing.
 class MovingPlatform : public Entity{
 private:
 	float timeToTurn;

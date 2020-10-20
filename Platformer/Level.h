@@ -6,7 +6,12 @@
 
 using namespace std;
 
-typedef pair <int, int> Size;
+struct Size {
+	int first;
+	int second;
+	Size() {};
+	Size(int fst, int scd) { first = fst; second = scd; }
+};
 
 struct Object{
 	sf::FloatRect rect;
@@ -33,6 +38,7 @@ private:
 	vector <Object> objects;
 	sf::Texture tilesetTexture;
 public:
+	Level();
 	bool loadFromXmlFile (const char*);
 	vector <Object> getObjectsByType(string) const;
 	vector <Object> getAllObjects() const;

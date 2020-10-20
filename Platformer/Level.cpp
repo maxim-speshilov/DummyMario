@@ -9,6 +9,9 @@ map <string, string> Object::getProperties() const{
 	return properties;
 }
 
+Level::Level() {
+};
+
 Size Level::getSize() const{
 	return size;
 }

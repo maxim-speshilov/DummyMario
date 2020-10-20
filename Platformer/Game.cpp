@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include "UIWidget.h"
 
-struct GameSettings{
+struct GameSettings {
 	unsigned int timeCoef;
 	std::vector <const char*> levelsFileNames;
 	unsigned int levelCount;
@@ -14,7 +14,7 @@ struct GameSettings{
 
 GameSettings settings;
 
-bool gameLoop(){
+bool gameLoop() {
 
 	for (auto levelFileName : settings.levelsFileNames) {
 
@@ -30,7 +30,7 @@ bool gameLoop(){
 		if (!main_theme.openFromFile("sounds/Mario_Theme.ogg"))
 			throw logic_error("Failed to open music file");
 
-		main_theme.setVolume(0);
+		main_theme.setVolume(80);
 
 		SoundBuffer buffer;
 		if (!buffer.loadFromFile("sounds/Jump.ogg"))
@@ -88,11 +88,11 @@ bool gameLoop(){
 
 		if (enemys.size() != 0) {
 			for (int i = 0; i < enemys.size(); i++) {
-				Entity::MoveDirection dir;
+				MoveDirection dir;
 				if (enemys[i].getPropertyByName("Direction") == "Right")
-					dir = Entity::Right;
+					dir = Right;
 				else
-					dir = Entity::Left;
+					dir = Left;
 
 				entities.push_front(new Enemy(level, Vector2f(enemys[i].rect.left, enemys[i].rect.top), 16, 16, dir));
 			}
@@ -206,7 +206,11 @@ bool gameLoop(){
 						if (player.speed.y > 0) {
 							player.rect.top = (*entities_it)->rect.top - player.rect.height;
 							player.speed.y = 0;
-							player.rect.left += (player.speed.x + (*entities_it)->speed.x)*time;
+							MoveDirection player_dir = player.getDirection();
+							MoveDirection platform_dir = (*entities_it)->getDirection();
+							
+							player.rect.left += (player.speed.x / 10 + (*entities_it)->speed.x )*time;
+							
 							player.isOnGround = true;
 							player.state = Entity::Staying;
 						}
