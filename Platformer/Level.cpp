@@ -65,7 +65,7 @@ bool Level::loadFromXmlFile(const char* filename){
 
 	TiXmlElement *tileset = map->FirstChildElement("tileset");
 	firstTileGID = atoi(tileset->Attribute("firstgid"));
-	TiXmlDocument tilesFile(tileset->Attribute("source"));
+	TiXmlDocument tilesFile("levels/tiles3.tsx");
 
 	if (!tilesFile.LoadFile())
 		return false;
@@ -79,7 +79,7 @@ bool Level::loadFromXmlFile(const char* filename){
 	sf::Image tilesetImage;
 
 
-	if (!tilesetImage.loadFromFile(image->Attribute("source")))
+	if (!tilesetImage.loadFromFile(string("levels/") + string(image->Attribute("source"))))
 		throw std::logic_error("Texture file not available");
 
 	// here you can create a mask from a color: tilesetImage.createMaskFromColor(sf::Color(R, G, B));

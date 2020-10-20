@@ -6,7 +6,7 @@ struct GameSettings{
 	unsigned int levelCount;
 	GameSettings(){
 		timeCoef = 1200;
-		levelsFileNames = { "map1.tmx", "map2.tmx" };
+		levelsFileNames = { "levels/map1.tmx", "levels/map2.tmx" };
 		levelCount = 0;
 	}
 };
@@ -26,13 +26,13 @@ bool gameLoop(){
 
 
 		Music main_theme;
-		if (!main_theme.openFromFile("Mario_Theme.ogg"))
+		if (!main_theme.openFromFile("sounds/Mario_Theme.ogg"))
 			throw logic_error("Failed to open music file");
 
 		main_theme.setVolume(100);
 
 		SoundBuffer buffer;
-		if (!buffer.loadFromFile("Jump.ogg"))
+		if (!buffer.loadFromFile("sounds/Jump.ogg"))
 			throw logic_error("Failed to open sound file");
 
 		Sound jump;
@@ -41,7 +41,7 @@ bool gameLoop(){
 
 		int money = 0;
 		Font font;
-		font.loadFromFile("SuperMario256.ttf");
+		font.loadFromFile("fonts/SuperMario256.ttf");
 		Text money_text(String("0"), font);
 		money_text.setPosition(8, 8);
 		money_text.setFillColor(Color::White);
@@ -57,16 +57,16 @@ bool gameLoop(){
 		Texture running_set, rolling_set, jumping_set;
 		Player player(level, { level.getObjectsByType("player").at(0).rect.left, level.getObjectsByType("player").at(0).rect.top }, 23, 28);
 
-		running_set.loadFromFile("run_set.png"); rolling_set.loadFromFile("rolling_set.png"), jumping_set.loadFromFile("jump_set.png");
+		running_set.loadFromFile("textures/run_set.png"); rolling_set.loadFromFile("textures/rolling_set.png"), jumping_set.loadFromFile("textures/jump_set.png");
 		player.editor.addAnimation("Running", running_set, 0, 0, 23, 28, 8, 0.005, 23);
 		player.editor.addAnimation("Staying", running_set, 0, 0, 23, 28, 1, 0, 0);
 		player.editor.addAnimation("Rolling", rolling_set, 0, 0, 22, 28, 8, 0.02, 22);
 		player.editor.addAnimation("Jumping", jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
 
 		Texture enemy_set, moving_platform_set, coin_set;
-		enemy_set.loadFromFile("enemy_set.png");	
-		moving_platform_set.loadFromFile("moving_platform.png");
-		coin_set.loadFromFile("coin.png");
+		enemy_set.loadFromFile("textures/enemy_set.png");	
+		moving_platform_set.loadFromFile("textures/moving_platform.png");
+		coin_set.loadFromFile("textures/coin.png");
 
 		std::list <Entity*> entities;
 		std::list <Entity*>::iterator it;
