@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "UIWidget.h"
 
 struct GameSettings{
 	unsigned int timeCoef;
@@ -29,7 +30,7 @@ bool gameLoop(){
 		if (!main_theme.openFromFile("sounds/Mario_Theme.ogg"))
 			throw logic_error("Failed to open music file");
 
-		main_theme.setVolume(100);
+		main_theme.setVolume(0);
 
 		SoundBuffer buffer;
 		if (!buffer.loadFromFile("sounds/Jump.ogg"))
@@ -39,17 +40,15 @@ bool gameLoop(){
 		jump.setBuffer(buffer);
 		jump.setVolume(50);
 
-		int money = 0;
-		Font font;
-		font.loadFromFile("fonts/SuperMario256.ttf");
-		Text money_text(String("0"), font);
-		money_text.setPosition(8, 8);
-		money_text.setFillColor(Color::White);
-
 		unsigned int screenWidth = 480;
 		unsigned int screenHeight = level.getSize().second * level.getTileSize().second;
 
 		RenderWindow window(VideoMode(screenWidth, screenHeight), "Platformer");
+
+		RenderTexture game_rt;
+		game_rt.create(screenWidth, screenHeight);
+		RenderTexture game_with_ui_rt;
+		game_with_ui_rt.create(screenWidth, screenHeight);
 
 		View view;
 		view.reset(sf::FloatRect(0, 0, screenWidth, screenHeight));
@@ -68,8 +67,18 @@ bool gameLoop(){
 		moving_platform_set.loadFromFile("textures/moving_platform.png");
 		coin_set.loadFromFile("textures/coin.png");
 
+		Font font;
+		font.loadFromFile("fonts/SuperMario256.ttf");
+
+		Score score(Vector2f(8, 8), Text(String("0"), font), 0);
+
+		std::list <UIWidget*> ui_widgets;
+		std::list <UIWidget*>::iterator widgets_it;
+
+		ui_widgets.push_front(&score);
+
 		std::list <Entity*> entities;
-		std::list <Entity*>::iterator it;
+		std::list <Entity*>::iterator entities_it;
 
 		vector <Object> enemys = level.getObjectsByType("enemy");
 
@@ -101,22 +110,22 @@ bool gameLoop(){
 			}
 		}
 
-		for (it = entities.begin(); it != entities.end(); it++) {
-			if ((*it)->type == "enemy") {
-				(*it)->editor.addAnimation("Running", enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
-				(*it)->editor.addAnimation("Dead", enemy_set, 34, 33, 16, 8, 1, 0, 0);
+		for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
+			if ((*entities_it)->type == "enemy") {
+				(*entities_it)->editor.addAnimation("Running", enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
+				(*entities_it)->editor.addAnimation("Dead", enemy_set, 34, 33, 16, 8, 1, 0, 0);
 			}
 
-			if ((*it)->type == "moving platform") {
-				(*it)->editor.addAnimation("Moving", moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
+			if ((*entities_it)->type == "moving platform") {
+				(*entities_it)->editor.addAnimation("Moving", moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
 			}
 
-			if ((*it)->type == "coin") {
-				(*it)->editor.addAnimation("Spinning", coin_set, 0, 0, 32, 32, 4, 0.008, 32);
+			if ((*entities_it)->type == "coin") {
+				(*entities_it)->editor.addAnimation("Spinning", coin_set, 0, 0, 32, 32, 4, 0.008, 32);
 			}
 		}
 
-		//main_theme.play();
+		main_theme.play();
 		main_theme.setLoop(true);
 
 		Clock clock;
@@ -174,65 +183,70 @@ bool gameLoop(){
 				view.setCenter(player.rect.left + 50, player.rect.top);
 			}
 
-
-
-			for (it = entities.begin(); it != entities.end();) {
-				(*it)->update(time);
-				if ((*it)->state == Entity::Dead)
-					it = entities.erase(it);
+			for (entities_it = entities.begin(); entities_it != entities.end();) {
+				(*entities_it)->update(time);
+				if ((*entities_it)->state == Entity::Dead)
+					entities_it = entities.erase(entities_it);
 				else
-					it++;
+					entities_it++;
 			}
 
-			for (it = entities.begin(); it != entities.end(); it++) {
-				if (player.rect.intersects((*it)->rect)) {
-					if ((*it)->type == "enemy") {
+			for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
+				if (player.rect.intersects((*entities_it)->rect)) {
+					if ((*entities_it)->type == "enemy") {
 						if (player.speed.y > 0) {
-							(*it)->speed.x = 0;
+							(*entities_it)->speed.x = 0;
 							player.speed.y *= (-1);
-							(*it)->state = Entity::Dead;
+							(*entities_it)->state = Entity::Dead;
 						}
-						else if ((*it)->state != Entity::Dead)
+						else if ((*entities_it)->state != Entity::Dead)
 							return true;
 					}
-					else if ((*it)->type == "moving platform") {
+					else if ((*entities_it)->type == "moving platform") {
 						if (player.speed.y > 0) {
-							player.rect.top = (*it)->rect.top - player.rect.height;
+							player.rect.top = (*entities_it)->rect.top - player.rect.height;
 							player.speed.y = 0;
-							player.rect.left += (player.speed.x + (*it)->speed.x)*time;
+							player.rect.left += (player.speed.x + (*entities_it)->speed.x)*time;
 							player.isOnGround = true;
 							player.state = Entity::Staying;
 						}
 						else if (player.speed.y < 0) {
-							player.rect.top = (*it)->rect.top + 32;
+							player.rect.top = (*entities_it)->rect.top + 32;
 							player.speed.y = 0;
 						}
 					}
-					else if ((*it)->type == "coin") {
-						(*it)->state = Entity::Dead;
-						money += 100;
-						money_text.setString(to_string(money));
+					else if ((*entities_it)->type == "coin") {
+						(*entities_it)->state = Entity::Dead;
+						score += 100;
 					}
 
 				}
 			}
 
-			window.clear(Color::Black);
-			window.setView(view);
+			game_rt.clear();
+			game_rt.setView(view);
 
-			level.draw(window);
+			level.draw(game_rt);
 
-			player.editor.drawAnimation(window, player.rect.left, player.rect.top);
+			player.editor.drawAnimation(game_rt, player.rect.left, player.rect.top);
 
-			for (it = entities.begin(); it != entities.end(); it++)
-				(*it)->editor.drawAnimation(window, (*it)->rect.left, (*it)->rect.top);
+			for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++)
+				(*entities_it)->editor.drawAnimation(game_rt, (*entities_it)->rect.left, (*entities_it)->rect.top);
 
-			window.setView(window.getDefaultView());
+			game_rt.display();
 
-			window.draw(money_text);
+			game_with_ui_rt.clear();
 
+			game_with_ui_rt.draw(Sprite(game_rt.getTexture()));
+
+			for (widgets_it = ui_widgets.begin(); widgets_it != ui_widgets.end(); widgets_it++)
+				(*widgets_it)->draw(game_with_ui_rt);
+
+			game_with_ui_rt.display();
+
+			window.clear();
+			window.draw(Sprite(game_with_ui_rt.getTexture()));
 			window.display();
-
 		}
 	}
 }

@@ -133,7 +133,7 @@ void Player::update(float time){
 	if (speed.y != 0)
 		state = Jumping;
 
-	keyboardWork();
+	keyboardProcessing();
 
 	switch (state){
 	case Staying:
@@ -175,7 +175,7 @@ void Player::update(float time){
 
 }
 
-void Player::keyboardWork(){
+void Player::keyboardProcessing(){
 	if (isKeyPressed["Left"]){
 		if (state == Staying)
 			state = Running;

@@ -35,7 +35,7 @@ public:
 	std::map <String, bool> isKeyPressed;
 	void update(float) override;
 	void mapProcessing(int);
-	void keyboardWork();
+	void keyboardProcessing();
 };
 
 class Enemy : public Entity{
