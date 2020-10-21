@@ -1,7 +1,8 @@
 #include "Entity.h"
 
 Entity::Entity(Level& level, Vector2f pos, int width, int height){
-	levelObjects = level.getAllObjects();
+	for (Object object : level.getAllObjects())
+		this->levelObjects.push_back(std::make_shared<Object>(object));
 	rect = FloatRect(pos.x, pos.y, width, height);
 }
 
@@ -9,88 +10,88 @@ MoveDirection Entity::getDirection() {
 	return this->direction;
 }
 
-// TODO: Sliding processing while being on slope  
+// TODO(me): Sliding processing while being on slope  
 
 void Player::mapProcessing(int direction){
 
-	for (Object object : levelObjects){
-		if (rect.intersects(object.rect)){
-			if (object.type == "Solid"){
+	for (auto object : levelObjects){
+		if (rect.intersects(object->rect)){
+			if (object->type == "Solid"){
 				if (direction == 1){
 					if (speed.y > 0){
-						rect.top = object.rect.top - rect.height;
+						rect.top = object->rect.top - rect.height;
 						speed.y = 0;
 						isOnGround = true;
 						state = Staying;
 					}
 
 					if (speed.y < 0) {
-						rect.top = object.rect.top + object.rect.height;
+						rect.top = object->rect.top + object->rect.height;
 						speed.y = 0;
 					}
 				}
 
 				if (direction == 0){
 					if (speed.x > 0)
-						rect.left = object.rect.left - rect.width;
+						rect.left = object->rect.left - rect.width;
 
 					if (speed.x < 0)
-						rect.left = object.rect.left + object.rect.width;
+						rect.left = object->rect.left + object->rect.width;
 				}
 			}
 
-			if (object.type == "JumpBooster"){
+			if (object->type == "JumpBooster"){
 				if (direction == 1){
 					if (speed.y > 0){
 						speed.y = -0.8;
 					}
 					else if (speed.y < 0) {
-						rect.top = object.rect.top + object.rect.height;
+						rect.top = object->rect.top + object->rect.height;
 						speed.y = 0;
 					}
 				}
 
 				if (direction == 0){
-					if (rect.left < object.rect.left - rect.width)
-						rect.left = object.rect.left - rect.width;
+					if (rect.left < object->rect.left - rect.width)
+						rect.left = object->rect.left - rect.width;
 
-					if (rect.left > object.rect.left + object.rect.width)
-						rect.left = object.rect.left + object.rect.width;
+					if (rect.left > object->rect.left + object->rect.width)
+						rect.left = object->rect.left + object->rect.width;
 				}
 			}
 
-			if (object.type == "JumpSuperBooster"){
+			if (object->type == "JumpSuperBooster"){
 				if (direction == 1){
 					if (speed.y > 0){
 						speed.y = -1.;
 					}
 
 					else if (speed.y < 0) {
-						rect.top = object.rect.top + object.rect.height;
+						rect.top = object->rect.top + object->rect.height;
 						speed.y = 0;
 					}
 				}
 
 				if (direction == 0){
-					if (rect.left < object.rect.left - rect.width)
-						rect.left = object.rect.left - rect.width;
+					if (rect.left < object->rect.left - rect.width)
+						rect.left = object->rect.left - rect.width;
 
-					if (rect.left > object.rect.left + object.rect.width)
-						rect.left = object.rect.left + object.rect.width;
+					if (rect.left > object->rect.left + object->rect.width)
+						rect.left = object->rect.left + object->rect.width;
 				}
 			}
 
-			if (object.type == "LeftPipe"){
+			if (object->type == "LeftPipe"){
 				if (direction == 1){
 					if (speed.y > 0){
-						rect.top = object.rect.top - rect.height;
+						rect.top = object->rect.top - rect.height;
 						speed.y = 0;
 						isOnGround = true;
 						state = Staying;
 					}
 
 					if (speed.y < 0) {
-						rect.top = object.rect.top + object.rect.height;
+						rect.top = object->rect.top + object->rect.height;
 						speed.y = 0;
 					}
 				}
@@ -101,17 +102,17 @@ void Player::mapProcessing(int direction){
 					sleep(t);
 
 					if (speed.x > 0)
-						rect.left = object.rect.left + object.rect.width;
+						rect.left = object->rect.left + object->rect.width;
 
 					if (speed.x < 0)
-						rect.left = object.rect.left - object.rect.width;
+						rect.left = object->rect.left - object->rect.width;
 				}
 			}
 
-			if (object.type == "SlopeRight") {
+			if (object->type == "SlopeRight") {
 				if (direction == 1) {
 					if (speed.y > 0) {
-						rect.top = object.rect.top - rect.height;
+						rect.top = object->rect.top - rect.height;
 						speed.y *= 0.4472;
 						isOnGround = true;
 						state = Sliding;
@@ -126,7 +127,7 @@ void Player::mapProcessing(int direction){
 	}
 }
 
-Player::Player(Level& level, Vector2f pos ,int width, int height) : 
+Player::Player(Level& level, Vector2f pos, int width, int height) : 
 Entity(level, pos, width, height){
 	state = Staying;
 	type = "player";
@@ -272,16 +273,16 @@ void Enemy::update(float time){
 
 void Enemy::mapProcessing(){
 
-	for (Object object : levelObjects)
-		if (rect.intersects(object.rect)) {
-			if (object.type == "Solid") {
+	for (auto object : levelObjects)
+		if (rect.intersects(object->rect)) {
+			if (object->type == "Solid") {
 				if (direction == Right) {
-					rect.left = object.rect.left - rect.width;
+					rect.left = object->rect.left - rect.width;
 						direction = Left;
 						speed.x *= -1;
 				}
 				else {
-					rect.left = object.rect.left + object.rect.width;
+					rect.left = object->rect.left + object->rect.width;
 						direction = Right;
 						speed.x *= -1;
 				}

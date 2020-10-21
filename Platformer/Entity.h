@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <list>
+#include <memory>
 #include <iterator>
 #include <SFML\Graphics.hpp>
 #include <string>
@@ -23,10 +24,11 @@ protected:
 	MoveDirection direction;
 	enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead } state;
 	AnimationEditor editor;
-	vector <Object> levelObjects;
+	vector <std::shared_ptr<Object>> levelObjects;
 	string type;
 public:
 	Entity(Level&, Vector2f, int, int);
+	Entity(Vector2f, int, int);
 	MoveDirection getDirection();
 	virtual void update(float) = 0;
 	friend bool gameLoop();

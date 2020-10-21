@@ -85,20 +85,16 @@ bool Level::loadFromXmlFile(const char* filename){
 	if (!tilesetImage.loadFromFile(string("levels/") + string(image->Attribute("source"))))
 		throw std::logic_error("Texture file not available");
 
-	// here you can create a mask from a color: tilesetImage.createMaskFromColor(sf::Color(R, G, B));
+	
 
 	tilesetTexture.loadFromImage(tilesetImage);
 	tilesetTexture.setSmooth(false);
-
-	// creating a vector from rectangles of images;
 
 	std::vector <sf::IntRect> tileRects;
 
 	for (int i = 0; i < numberOfRows; i++)
 		for (int j = 0; j < numberOfColumns; j++)
 			tileRects.push_back(sf::IntRect(j * (tileSize.first + spacing), i * (tileSize.second + spacing), tileSize.first, tileSize.second));
-
-	// working with layers 
 
 	TiXmlElement *layerElement = map->FirstChildElement("layer");
 	while (layerElement){
@@ -132,8 +128,6 @@ bool Level::loadFromXmlFile(const char* filename){
 		layers.push_back(layer);
 		layerElement = layerElement->NextSiblingElement("layer");
 	}
-
-	// working with objects
 
 	TiXmlElement *objectgroupElement;
 

@@ -14,6 +14,7 @@ struct GameSettings {
 
 GameSettings settings;
 
+// TODO: Fix view bug 
 bool gameLoop() {
 
 	for (auto levelFileName : settings.levelsFileNames) {
@@ -32,27 +33,40 @@ bool gameLoop() {
 
 		main_theme.setVolume(80);
 
-		SoundBuffer buffer;
-		if (!buffer.loadFromFile("sounds/Jump.ogg"))
+		SoundBuffer jump_buffer;
+		if (!jump_buffer.loadFromFile("sounds/Jump.ogg"))
+			throw logic_error("Failed to open sound file");
+
+		SoundBuffer coin_buffer;
+		if (!coin_buffer.loadFromFile("sounds/Coin.ogg"))
 			throw logic_error("Failed to open sound file");
 
 		Sound jump;
-		jump.setBuffer(buffer);
+		jump.setBuffer(jump_buffer);
 		jump.setVolume(50);
 
-		unsigned int screenWidth = 480;
-		unsigned int screenHeight = level.getSize().second * level.getTileSize().second;
+		Sound coin;
+		coin.setBuffer(coin_buffer);
+		coin.setVolume(65);
 
-		RenderWindow window(VideoMode(screenWidth, screenHeight), "Platformer");
+		unsigned int screen_width = 480;
+		unsigned int screen_height = 600;
+
+		RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Titlebar | Style::Close);
+		window.setFramerateLimit(60);
+		window.setMouseCursorVisible(false);
+
+		unsigned int level_width = level.getSize().first * level.getTileSize().first;
+		unsigned int level_height = level.getSize().second * level.getTileSize().second;
 
 		RenderTexture game_rt;
-		game_rt.create(screenWidth, screenHeight);
+		game_rt.create(480, 600);
 		RenderTexture game_with_ui_rt;
-		game_with_ui_rt.create(screenWidth, screenHeight);
+		game_with_ui_rt.create(480, 600);
 
 		View view;
-		view.reset(sf::FloatRect(0, 0, screenWidth, screenHeight));
-
+		view.reset(sf::FloatRect(0.f, 0.f, screen_width, screen_height));
+		
 		Texture running_set, rolling_set, jumping_set;
 		Player player(level, { level.getObjectsByType("player").at(0).rect.left, level.getObjectsByType("player").at(0).rect.top }, 23, 28);
 
@@ -82,7 +96,7 @@ bool gameLoop() {
 
 		vector <Object> enemys = level.getObjectsByType("enemy");
 
-		vector <Object> movingPlatforms = level.getObjectsByType("moving platform");
+		vector <Object> moving_platforms = level.getObjectsByType("moving platform");
 
 		vector <Object> coins = level.getObjectsByType("coin");
 
@@ -98,9 +112,15 @@ bool gameLoop() {
 			}
 		}
 
-		if (movingPlatforms.size() != 0) {
-			for (int i = 0; i < movingPlatforms.size(); i++) {
-				entities.push_front(new MovingPlatform(level, Vector2f(movingPlatforms[i].rect.left, movingPlatforms[i].rect.top), 96, 32));
+		if (moving_platforms.size() != 0) {
+			for (int i = 0; i < moving_platforms.size(); i++) {
+				MoveDirection dir;
+				if (enemys[i].getPropertyByName("Direction") == "Right")
+					dir = Right;
+				else
+					dir = Left;
+
+				entities.push_front(new MovingPlatform(level, Vector2f(moving_platforms[i].rect.left, moving_platforms[i].rect.top), 96, 32));
 			}
 		}
 
@@ -176,12 +196,13 @@ bool gameLoop() {
 				break;
 			}
 			
-			if ((player.rect.left > view.getSize().x / 2 && player.rect.left < level.getSize().first * level.getTileSize().first - view.getSize().x / 2 - 50)) {
-				view.setCenter(player.rect.left + 50, screenHeight / 2);
+			view.setCenter(player.rect.left, player.rect.top);
+			/*if ((player.rect.left > view.getSize().x / 2 && player.rect.left < level.getSize().first * level.getTileSize().first - view.getSize().x / 2 - 50)) {
+				view.setCenter(player.rect.left + 50, screen_height / 2);
 			}
 			if ((player.rect.top > view.getSize().y / 2 && player.rect.top < level.getSize().second * level.getTileSize().second - view.getSize().y / 2)) {
 				view.setCenter(player.rect.left + 50, player.rect.top);
-			}
+			}*/
 
 			for (entities_it = entities.begin(); entities_it != entities.end();) {
 				(*entities_it)->update(time);
@@ -220,6 +241,7 @@ bool gameLoop() {
 						}
 					}
 					else if ((*entities_it)->type == "coin") {
+						coin.play();
 						(*entities_it)->state = Entity::Dead;
 						score += 100;
 					}
