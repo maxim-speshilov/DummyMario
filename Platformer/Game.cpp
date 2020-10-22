@@ -5,7 +5,7 @@ struct GameSettings {
 	unsigned int timeCoef;
 	std::vector <const char*> levelsFileNames;
 	unsigned int levelCount;
-	GameSettings(){
+	GameSettings() {
 		timeCoef = 1200;
 		levelsFileNames = { "levels/map1.tmx", "levels/map2.tmx" };
 		levelCount = 0;
@@ -14,7 +14,6 @@ struct GameSettings {
 
 GameSettings settings;
 
-// TODO: Fix view bug 
 bool gameLoop() {
 
 	for (auto levelFileName : settings.levelsFileNames) {
@@ -52,21 +51,21 @@ bool gameLoop() {
 		unsigned int screen_width = 480;
 		unsigned int screen_height = 600;
 
-		RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Titlebar | Style::Close);
-		window.setFramerateLimit(60);
+		RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Titlebar | Style::Close | Style::Resize);
 		window.setMouseCursorVisible(false);
 
 		unsigned int level_width = level.getSize().first * level.getTileSize().first;
 		unsigned int level_height = level.getSize().second * level.getTileSize().second;
 
+
 		RenderTexture game_rt;
-		game_rt.create(480, 600);
+		game_rt.create(screen_width, screen_height);
 		RenderTexture game_with_ui_rt;
-		game_with_ui_rt.create(480, 600);
+		game_with_ui_rt.create(screen_width, screen_height);
 
 		View view;
-		view.reset(sf::FloatRect(0.f, 0.f, screen_width, screen_height));
-		
+		view.reset(sf::FloatRect(0.f, level_height - (float)screen_height, screen_width, screen_height));
+
 		Texture running_set, rolling_set, jumping_set;
 		Player player(level, { level.getObjectsByType("player").at(0).rect.left, level.getObjectsByType("player").at(0).rect.top }, 23, 28);
 
@@ -77,7 +76,7 @@ bool gameLoop() {
 		player.editor.addAnimation("Jumping", jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
 
 		Texture enemy_set, moving_platform_set, coin_set;
-		enemy_set.loadFromFile("textures/enemy_set.png");	
+		enemy_set.loadFromFile("textures/enemy_set.png");
 		moving_platform_set.loadFromFile("textures/moving_platform.png");
 		coin_set.loadFromFile("textures/coin.png");
 
@@ -91,45 +90,33 @@ bool gameLoop() {
 
 		ui_widgets.push_front(&score);
 
+		vector <Object> level_objects = level.getAllObjects();
+
 		std::list <Entity*> entities;
 		std::list <Entity*>::iterator entities_it;
 
-		vector <Object> enemys = level.getObjectsByType("enemy");
+		for (Object level_object : level.getAllObjects()) {
 
-		vector <Object> moving_platforms = level.getObjectsByType("moving platform");
-
-		vector <Object> coins = level.getObjectsByType("coin");
-
-		if (enemys.size() != 0) {
-			for (int i = 0; i < enemys.size(); i++) {
+			if (level_object.type == "enemy") {
 				MoveDirection dir;
-				if (enemys[i].getPropertyByName("Direction") == "Right")
+				if (level_object.getPropertyByName("Direction") == "Right")
 					dir = Right;
 				else
 					dir = Left;
+				entities.push_front(new Enemy(level, Vector2f(level_object.rect.left, level_object.rect.top), 16, 16, dir));
 
-				entities.push_front(new Enemy(level, Vector2f(enemys[i].rect.left, enemys[i].rect.top), 16, 16, dir));
+			} 
+			if (level_object.type == "coin") {
+				entities.push_front(new Coin(level, Vector2f(level_object.rect.left, level_object.rect.top), 32, 32));
+			}
+
+			if (level_object.type == "moving platform") {
+
+				entities.push_front(new MovingPlatform(level, Vector2f(level_object.rect.left, level_object.rect.top), 96, 32, Right));
+
 			}
 		}
-
-		if (moving_platforms.size() != 0) {
-			for (int i = 0; i < moving_platforms.size(); i++) {
-				MoveDirection dir;
-				if (enemys[i].getPropertyByName("Direction") == "Right")
-					dir = Right;
-				else
-					dir = Left;
-
-				entities.push_front(new MovingPlatform(level, Vector2f(moving_platforms[i].rect.left, moving_platforms[i].rect.top), 96, 32));
-			}
-		}
-
-		if (coins.size() != 0) {
-			for (int i = 0; i < coins.size(); i++) {
-				entities.push_front(new Coin(level, Vector2f(coins[i].rect.left, coins[i].rect.top), 32, 32));
-			}
-		}
-
+	
 		for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
 			if ((*entities_it)->type == "enemy") {
 				(*entities_it)->editor.addAnimation("Running", enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
@@ -195,14 +182,20 @@ bool gameLoop() {
 				window.clear(Color::Black);
 				break;
 			}
-			
-			view.setCenter(player.rect.left, player.rect.top);
-			/*if ((player.rect.left > view.getSize().x / 2 && player.rect.left < level.getSize().first * level.getTileSize().first - view.getSize().x / 2 - 50)) {
-				view.setCenter(player.rect.left + 50, screen_height / 2);
+
+			/* ----- View processing ----- */
+
+			Vector2f current_view_center = view.getCenter();
+
+			if (player.rect.left > screen_width / 2 && player.rect.left < level_width - screen_width / 2) {
+				view.setCenter(player.rect.left, current_view_center.y);
 			}
+
+			current_view_center = view.getCenter();
+
 			if ((player.rect.top > view.getSize().y / 2 && player.rect.top < level.getSize().second * level.getTileSize().second - view.getSize().y / 2)) {
-				view.setCenter(player.rect.left + 50, player.rect.top);
-			}*/
+				view.setCenter(current_view_center.x, player.rect.top);
+			}
 
 			for (entities_it = entities.begin(); entities_it != entities.end();) {
 				(*entities_it)->update(time);
@@ -229,9 +222,9 @@ bool gameLoop() {
 							player.speed.y = 0;
 							MoveDirection player_dir = player.getDirection();
 							MoveDirection platform_dir = (*entities_it)->getDirection();
-							
-							player.rect.left += (player.speed.x / 10 + (*entities_it)->speed.x )*time;
-							
+
+							player.rect.left += (player.speed.x / 10 + (*entities_it)->speed.x)*time;
+
 							player.isOnGround = true;
 							player.state = Entity::Staying;
 						}

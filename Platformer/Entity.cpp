@@ -1,8 +1,9 @@
 #include "Entity.h"
 
 Entity::Entity(Level& level, Vector2f pos, int width, int height){
-	for (Object object : level.getAllObjects())
-		this->levelObjects.push_back(std::make_shared<Object>(object));
+	std::vector <Object> levelObjects = level.getAllObjects();
+	for (Object object : levelObjects)
+		this->levelObjects.push_back(std::make_shared<Object>(object));	
 	rect = FloatRect(pos.x, pos.y, width, height);
 }
 
@@ -290,29 +291,47 @@ void Enemy::mapProcessing(){
 		}
 }
 
-MovingPlatform::MovingPlatform(Level& level, Vector2f position, int width, int height) :
+MovingPlatform::MovingPlatform(Level& level, Vector2f position, int width, int height, MoveDirection direction) :
 	Entity(level, position, width, height){
-	speed = Vector2f(0.1, 0);
-	direction = Right;
+
+	state = Running;
+	this->direction = direction;
+
+	if (direction == Right)
+		speed = Vector2f(0.1, 0);
+	else
+		speed = Vector2f(-0.1, 0);
+
 	type = "moving platform";
 	timeToTurn = 0;	
 }
 
 void MovingPlatform::update(float time){
 	rect.left += speed.x * time;
-	timeToTurn += time;
-	if (timeToTurn > 3000){
-		speed.x *= -1;
-		timeToTurn = 0;
-	}
-
+	mapProcessing();
 	editor.setAnimation("Moving");
 	editor.shiftAnimation(time);
 }
 
 void MovingPlatform::mapProcessing()
 {
+	for (auto object : levelObjects)
+		if (rect.intersects(object->rect)) {
+			if (object->type == "Solid") {
+				if (direction == Right) {
+					rect.left = object->rect.left - rect.width;
+					direction = Left;
+					speed.x *= -1;
+				}
+				else {
+					rect.left = object->rect.left + object->rect.width;
+					direction = Right;
+					speed.x *= -1;
+				}
+			}
+		}
 }
+
 
 
 Coin::Coin(Level& level, Vector2f position, int width, int height) :

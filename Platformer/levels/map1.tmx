@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="150">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="265">
  <tileset firstgid="1" source="tiles3.tsx"/>
  <objectgroup id="2" name="Слой объектов 1">
   <object id="2" type="Solid" x="576" y="1088.13" width="96.125" height="96"/>
@@ -19,18 +19,17 @@
   <object id="21" type="Solid" x="191.818" y="895.801" width="64" height="64.1989"/>
   <object id="23" type="Solid" x="384.182" y="863.818" width="64" height="32.3636"/>
   <object id="24" type="Solid" x="319.818" y="928.182" width="128.182" height="31.6364"/>
-  <object id="25" type="Solid" x="0.333333" y="1184" width="1599.67" height="96"/>
+  <object id="25" type="Solid" x="0.333333" y="1184" width="1599.42" height="96"/>
   <object id="27" type="Solid" x="0.333333" y="800.667" width="1" height="382"/>
   <object id="31" type="Solid" x="1184.11" y="899.522" width="95.8841" height="284.447"/>
   <object id="32" name="Moving Platform" type="moving platform" x="1312" y="928" width="96.25" height="32.5"/>
   <object id="33" type="Solid" x="1343.75" y="1055.5" width="192.75" height="129"/>
-  <object id="34" type="Solid" x="1599.82" y="640.25" width="0.184783" height="543.292"/>
   <object id="36" name="Enemy" type="enemy" x="224" y="1168">
    <properties>
     <property name="Direction" value="Left"/>
    </properties>
   </object>
-  <object id="37" name="Enemy" type="enemy" x="480" y="1168">
+  <object id="37" name="Enemy" type="enemy" x="462.667" y="1168">
    <properties>
     <property name="Direction" value="Right"/>
    </properties>
@@ -45,18 +44,16 @@
     <property name="Direction" value="Right"/>
    </properties>
   </object>
-  <object id="40" name="Enemy" type="enemy" x="1576" y="1168">
+  <object id="40" name="Enemy" type="Solid" x="1576" y="1168">
    <properties>
     <property name="Direction" value="Right"/>
    </properties>
   </object>
   <object id="41" name="Player" type="player" x="125.417" y="1056" width="3" height="0.5"/>
-  <object id="42" type="JumpBooster" x="1407.98" y="832.5" width="96" height="31.5"/>
+  <object id="42" name="Jump Booster" type="JumpBooster" x="1407.98" y="832.5" width="96" height="31.5"/>
   <object id="43" type="Solid" x="1471.75" y="991.5" width="64.5" height="65"/>
   <object id="44" type="Solid" x="1280.25" y="704.5" width="95.5" height="95.75"/>
   <object id="45" type="Solid" x="1184" y="640.25" width="96.25" height="159.75"/>
-  <object id="46" type="ExitPipe" x="1280.13" y="640.25" width="64.25" height="31.875"/>
-  <object id="48" type="Solid" x="1344.25" y="640.25" width="256" height="1" visible="0"/>
   <object id="51" name="Moving Platform" type="moving platform" x="96" y="768" height="1.33333"/>
   <object id="55" name="Enemy" type="enemy" x="322.333" y="1168">
    <properties>
@@ -64,7 +61,6 @@
    </properties>
   </object>
   <object id="58" name="Coin" type="coin" x="191.864" y="815.5" width="32" height="32"/>
-  <object id="60" x="12" y="944.5"/>
   <object id="61" name="Coin" type="coin" x="234" y="814.333" width="32" height="32"/>
   <object id="62" name="Coin" type="coin" x="276" y="815.667" width="32" height="32"/>
   <object id="63" name="Coin" type="coin" x="276" y="815.667" width="32" height="32"/>
@@ -86,9 +82,9 @@
   <object id="83" name="Coin" type="coin" x="1339" y="1015.17" width="32" height="32"/>
   <object id="84" name="Coin" type="coin" x="1371" y="1015.5" width="32" height="32"/>
   <object id="85" name="Coin" type="coin" x="1403.67" y="1015.17" width="32" height="32"/>
-  <object id="86" name="Coin" type="coin" x="1435.67" y="1016.17" width="32" height="32"/>
+  <object id="86" name="Coin" type="coin" x="1435.67" y="1014.84" width="32" height="32"/>
   <object id="87" name="Coin" type="coin" x="1297" y="1138.33" width="32" height="32"/>
-  <object id="88" name="Coin" type="coin" x="1553" y="1137" width="32" height="32"/>
+  <object id="88" name="Coin" type="Solid" x="1553" y="1137" width="32" height="32"/>
   <object id="89" name="Coin" type="coin" x="64" y="736" width="32" height="32"/>
   <object id="90" name="Coin" type="coin" x="256" y="1139" width="32" height="32"/>
   <object id="91" name="Coin" type="coin" x="481" y="1141" width="32" height="32"/>
@@ -115,18 +111,113 @@
   <object id="132" name="Coin" type="coin" x="416" y="672.396" width="32" height="32"/>
   <object id="133" name="Coin" type="coin" x="448" y="672.146" width="32" height="32"/>
   <object id="134" name="Coin" type="coin" x="384.25" y="672.896" width="32" height="32"/>
-  <object id="135" name="Exit Pipe" type="ExitPipe" x="1508.75" y="62.5" width="54" height="1.25"/>
   <object id="136" type="Solid" x="1056" y="832.5" width="32.5" height="30.5"/>
   <object id="137" type="Solid" x="736.5" y="800" width="255" height="63.5"/>
   <object id="138" type="Solid" x="992" y="800" width="32" height="32"/>
   <object id="139" type="Solid" x="832" y="735.5" width="258" height="32"/>
   <object id="140" type="Solid" x="1088" y="704" width="32" height="32.5"/>
-  <object id="142" x="1090.18" y="736.727" width="28.3636" height="446.879"/>
-  <object id="149" name="Enemy" type="enemy" x="364.25" y="1168.5">
+  <object id="142" type="Solid" x="1090.18" y="736.727" width="28.3636" height="446.879"/>
+  <object id="149" name="Enemy" type="enemy" x="101.583" y="1163.83">
    <properties>
     <property name="Direction" value="Right"/>
    </properties>
   </object>
+  <object id="151" type="Solid" x="736" y="672.333" width="63.6667" height="127.333"/>
+  <object id="152" type="Solid" x="1215.67" y="608.333" width="32" height="31"/>
+  <object id="154" type="Solid" x="1407.67" y="640" width="63.6667" height="64"/>
+  <object id="155" type="Solid" x="1504.34" y="702.667" width="64.3333" height="63.6667"/>
+  <object id="156" type="Solid" x="1568.33" y="576.333" width="30.3333" height="31.3333"/>
+  <object id="157" type="Solid" x="1504" y="543.667" width="32.3333" height="32"/>
+  <object id="158" type="Solid" x="1344" y="576" width="32" height="31.6667"/>
+  <object id="159" type="Solid" x="1312" y="544" width="32" height="31.6667"/>
+  <object id="160" type="Solid" x="1280" y="511.667" width="32" height="32"/>
+  <object id="161" type="Solid" x="1408" y="480" width="64" height="64"/>
+  <object id="162" type="Solid" x="1536" y="415.667" width="63.3333" height="64"/>
+  <object id="163" type="Solid" x="1441.67" y="352.667" width="62.6667" height="30.3333"/>
+  <object id="164" type="Solid" x="1442" y="287.667" width="29" height="63.6667"/>
+  <object id="166" type="Solid" x="1440.33" y="256.333" width="159.667" height="31.3333"/>
+  <object id="167" type="Solid" x="1569.67" y="-0.333333" width="30" height="256.333"/>
+  <object id="168" type="Solid" x="1441.67" y="0.333333" width="28.6667" height="95"/>
+  <object id="169" type="Solid" x="928" y="32" width="480" height="63.5"/>
+  <object id="170" type="Solid" x="928.25" y="95.5" width="94.5" height="32"/>
+  <object id="171" type="Solid" x="928.5" y="127.5" width="544.333" height="64.25"/>
+  <object id="173" type="Solid" x="928" y="256" width="256.667" height="63.6667"/>
+  <object id="177" type="Solid" x="1152" y="320.333" width="192" height="63.6667"/>
+  <object id="178" type="Solid" x="1472.13" y="0" width="31.875" height="0.625"/>
+  <object id="180" type="Solid" x="0.909091" y="0" width="798.182" height="32"/>
+  <object id="181" type="Solid" x="128" y="95.75" width="96.25" height="96.25"/>
+  <object id="182" type="Solid" x="224.182" y="127.455" width="64.1818" height="64.3636"/>
+  <object id="183" type="Solid" x="0" y="32" width="32" height="160"/>
+  <object id="185" type="Solid" x="0" y="192" width="479.5" height="128"/>
+  <object id="188" type="Solid" x="512.333" y="224" width="32.3333" height="32"/>
+  <object id="189" type="Solid" x="1" y="416" width="32.3333" height="32"/>
+  <object id="190" type="Solid" x="544.333" y="288" width="32.3333" height="32"/>
+  <object id="191" type="Solid" x="1152" y="768.5" width="32.5" height="30.5"/>
+  <object id="192" type="Solid" x="0" y="575.333" width="32" height="32.3333"/>
+  <object id="193" type="Solid" x="0" y="480" width="544.333" height="96"/>
+  <object id="194" type="Solid" x="543.667" y="512" width="736.667" height="95.6667"/>
+  <object id="195" type="Solid" x="64" y="384" width="576.318" height="32"/>
+  <object id="196" type="Solid" x="608.25" y="319.75" width="31.25" height="64.25"/>
+  <object id="197" type="Solid" x="736.25" y="319.75" width="32.5227" height="64.25"/>
+  <object id="198" type="Solid" x="577" y="159.977" width="31" height="192.273"/>
+  <object id="199" type="Solid" x="769" y="160" width="31" height="192.273"/>
+  <object id="200" type="Solid" x="608.432" y="160" width="159.886" height="31.2727"/>
+  <object id="201" type="Solid" x="738" y="384" width="190.333" height="31.6667"/>
+  <object id="202" type="Solid" x="960" y="383.333" width="127.667" height="33"/>
+  <object id="203" type="Solid" x="1057.5" y="416.5" width="29.5" height="62"/>
+  <object id="204" type="Solid" x="769.273" y="416" width="29.2727" height="63.6364"/>
+  <object id="205" type="Solid" x="798.5" y="448" width="258.5" height="31.75"/>
+  <object id="206" name="Moving Platform" type="moving platform" x="1120.5" y="415.5" width="94.5" height="32"/>
+  <object id="208" type="Solid" x="799.5" y="0" width="639" height="1"/>
+  <object id="209" type="Solid" x="416" y="63.75" width="32" height="96"/>
+  <object id="210" name="Moving Platform" type="moving platform" x="640.667" y="63.3333" width="96" height="32.6667"/>
+  <object id="211" name="Enemy" type="enemy" x="303.5" y="688" width="16" height="16">
+   <properties>
+    <property name="Direction" value="Right"/>
+   </properties>
+  </object>
+  <object id="213" name="Enemy" type="enemy" x="320.083" y="591.5" width="16" height="16">
+   <properties>
+    <property name="Direction" value="Right"/>
+   </properties>
+  </object>
+  <object id="215" type="Solid" x="1599.13" y="288" width="10" height="919.426"/>
+  <object id="218" type="Solid" x="1504" y="160" width="31" height="31"/>
+  <object id="228" type="ExitPipe" x="1509.56" y="59.697" width="53.5455" height="4.2727"/>
+  <object id="230" name="Coin" type="coin" x="63.7917" y="574.771" width="32" height="32"/>
+  <object id="231" name="Coin" type="coin" x="96.5417" y="574.771" width="32" height="32"/>
+  <object id="232" name="Coin" type="coin" x="32.5417" y="575.521" width="32" height="32"/>
+  <object id="233" name="Coin" type="coin" x="128.792" y="575.896" width="32" height="32"/>
+  <object id="234" name="Coin" type="coin" x="191.458" y="575.104" width="32" height="32"/>
+  <object id="235" name="Coin" type="coin" x="224.208" y="575.104" width="32" height="32"/>
+  <object id="236" name="Coin" type="coin" x="160.208" y="575.854" width="32" height="32"/>
+  <object id="237" name="Coin" type="coin" x="256.458" y="576.229" width="32" height="32"/>
+  <object id="238" name="Coin" type="coin" x="383.458" y="574.771" width="32" height="32"/>
+  <object id="239" name="Coin" type="coin" x="416.208" y="574.771" width="32" height="32"/>
+  <object id="240" name="Coin" type="coin" x="352.208" y="575.521" width="32" height="32"/>
+  <object id="241" name="Coin" type="coin" x="448.458" y="575.896" width="32" height="32"/>
+  <object id="242" name="Coin" type="coin" x="511.667" y="607.667" width="32" height="32"/>
+  <object id="243" name="Coin" type="coin" x="832.667" y="700.5" width="32" height="32"/>
+  <object id="244" name="Coin" type="coin" x="864.667" y="700.833" width="32" height="32"/>
+  <object id="245" name="Coin" type="coin" x="897.333" y="700.5" width="32" height="32"/>
+  <object id="246" name="Coin" type="coin" x="929.333" y="701.5" width="32" height="32"/>
+  <object id="247" name="Coin" type="coin" x="1055" y="924" width="32" height="32"/>
+  <object id="248" name="Coin" type="coin" x="1056" y="797" width="32" height="32"/>
+  <object id="249" name="Coin" type="coin" x="877.667" y="862.5" width="32" height="32"/>
+  <object id="250" name="Coin" type="coin" x="909.667" y="862.833" width="32" height="32"/>
+  <object id="251" name="Coin" type="coin" x="942.333" y="862.5" width="32" height="32"/>
+  <object id="252" name="Coin" type="coin" x="974.333" y="863.5" width="32" height="32"/>
+  <object id="253" name="Coin" type="coin" x="992" y="1149.5" width="32" height="32"/>
+  <object id="254" name="Coin" type="coin" x="1024" y="1150.5" width="32" height="32"/>
+  <object id="255" name="Coin" type="coin" x="796.667" y="416.5" width="32" height="32"/>
+  <object id="256" name="Coin" type="coin" x="828.667" y="416.833" width="32" height="32"/>
+  <object id="257" name="Coin" type="coin" x="861.333" y="416.5" width="32" height="32"/>
+  <object id="258" name="Coin" type="coin" x="893.333" y="417.5" width="32" height="32"/>
+  <object id="259" name="Coin" type="coin" x="959.667" y="415.5" width="32" height="32"/>
+  <object id="260" name="Coin" type="coin" x="991.667" y="415.833" width="32" height="32"/>
+  <object id="261" name="Coin" type="coin" x="1024.33" y="415.5" width="32" height="32"/>
+  <object id="263" type="Solid" x="-15.3333" y="320.667" width="15.3333" height="158"/>
+  <object id="264" name="Moving Platform" type="moving platform" x="33.875" y="896.75" width="96.25" height="32.5"/>
  </objectgroup>
  <layer id="6" name="Слой тайлов 1" width="50" height="40">
   <data>
@@ -243,7 +334,7 @@
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
-   <tile gid="237"/>
+   <tile gid="4"/>
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
@@ -293,7 +384,7 @@
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
-   <tile gid="237"/>
+   <tile gid="79"/>
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
@@ -343,7 +434,7 @@
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
-   <tile gid="237"/>
+   <tile gid="154"/>
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
@@ -427,7 +518,7 @@
    <tile gid="152"/>
    <tile gid="153"/>
    <tile gid="237"/>
-   <tile gid="237"/>
+   <tile gid="229"/>
    <tile gid="237"/>
    <tile gid="76"/>
    <tile gid="155"/>
@@ -763,7 +854,7 @@
    <tile gid="226"/>
    <tile gid="227"/>
    <tile gid="227"/>
-   <tile gid="3"/>
+   <tile gid="302"/>
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
@@ -780,7 +871,7 @@
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
-   <tile gid="237"/>
+   <tile gid="229"/>
    <tile gid="237"/>
    <tile gid="237"/>
    <tile gid="237"/>
@@ -1177,8 +1268,8 @@
    <tile gid="2482"/>
    <tile gid="2483"/>
    <tile gid="17"/>
-   <tile gid="2634"/>
-   <tile gid="2635"/>
+   <tile gid="2415"/>
+   <tile gid="2415"/>
    <tile gid="20"/>
    <tile gid="78"/>
    <tile gid="91"/>
@@ -1227,8 +1318,8 @@
    <tile gid="2557"/>
    <tile gid="2558"/>
    <tile gid="16"/>
-   <tile gid="2709"/>
-   <tile gid="2710"/>
+   <tile gid="2415"/>
+   <tile gid="2415"/>
    <tile gid="19"/>
    <tile gid="78"/>
    <tile gid="92"/>
@@ -1277,8 +1368,8 @@
    <tile gid="16"/>
    <tile gid="16"/>
    <tile gid="17"/>
-   <tile gid="18"/>
-   <tile gid="19"/>
+   <tile gid="2634"/>
+   <tile gid="2635"/>
    <tile gid="20"/>
    <tile gid="78"/>
    <tile gid="92"/>
@@ -1327,8 +1418,8 @@
    <tile gid="91"/>
    <tile gid="16"/>
    <tile gid="17"/>
-   <tile gid="18"/>
-   <tile gid="19"/>
+   <tile gid="2709"/>
+   <tile gid="2710"/>
    <tile gid="20"/>
    <tile gid="155"/>
    <tile gid="2"/>
@@ -1378,7 +1469,7 @@
    <tile gid="91"/>
    <tile gid="92"/>
    <tile gid="93"/>
-   <tile gid="94"/>
+   <tile gid="237"/>
    <tile gid="95"/>
    <tile gid="77"/>
    <tile gid="77"/>

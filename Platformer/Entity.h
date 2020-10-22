@@ -7,7 +7,7 @@
 #include <SFML\Graphics.hpp>
 #include <string>
 #include <SFML\Audio.hpp>
-#include "Animation.h"
+#include "Animation.h"A
 #include "Level.h"
 
 using namespace sf;
@@ -15,6 +15,7 @@ using namespace sf;
 enum MoveDirection { Nowhere, Right, Left, Up, Down };
 enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead };
 
+// TODO(me): Change update. Change entity to avoid storing vector of pointers to level objects.
 class Entity{
 protected:
 	Vector2f speed;
@@ -28,7 +29,6 @@ protected:
 	string type;
 public:
 	Entity(Level&, Vector2f, int, int);
-	Entity(Vector2f, int, int);
 	MoveDirection getDirection();
 	virtual void update(float) = 0;
 	friend bool gameLoop();
@@ -53,12 +53,11 @@ public:
 	void mapProcessing();
 };
 
-// TODO(me): add mapProcessing.
 class MovingPlatform : public Entity{
 private:
 	float timeToTurn;
 public:
-	MovingPlatform (Level&, Vector2f, int, int);
+	MovingPlatform (Level&, Vector2f, int, int, MoveDirection);
 	void update(float) override;
 	void mapProcessing();
 };
