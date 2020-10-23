@@ -6,7 +6,7 @@ struct GameSettings {
 	std::vector <const char*> levelsFileNames;
 	unsigned int levelCount;
 	GameSettings() {
-		timeCoef = 1200;
+		timeCoef = 833;
 		levelsFileNames = { "levels/map1.tmx", "levels/map2.tmx" };
 		levelCount = 0;
 	}
@@ -14,7 +14,8 @@ struct GameSettings {
 
 GameSettings settings;
 
-// TODO(me) : ake player invulnerable atfer touching an enemy.
+// TODO(me) : Create right game structure: start menu, settings, level loading with black screen, game over screen. 
+// TODO(me) : Fix invulnerable implementation. It works but seems strange. 
 bool gameLoop() {
 
 	for (auto levelFileName : settings.levelsFileNames) {
@@ -51,11 +52,14 @@ bool gameLoop() {
 		unsigned int screen_width = 480;
 		unsigned int screen_height = 600;
 
-		RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Titlebar | Style::Close | Style::Resize);
+		RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Fullscreen);
 		window.setMouseCursorVisible(false);
 
-		unsigned int level_width = scene.getSize().first * scene.getTileSize().first;
-		unsigned int level_height = scene.getSize().second * scene.getTileSize().second;
+		/* ----- Add this to set max number of frames per second -----*/
+		//window.setFramerateLimit(60);
+
+		float level_width = scene.getSize().x * scene.getTileSize().x;
+		float level_height = scene.getSize().y * scene.getTileSize().y;
 
 
 		RenderTexture game_rt;
@@ -75,9 +79,10 @@ bool gameLoop() {
 		player.editor.addAnimation("Rolling", rolling_set, 0, 0, 22, 28, 8, 0.02, 22);
 		player.editor.addAnimation("Jumping", jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
 
-		Texture enemy_set, moving_platform_set, coin_set;
+		Texture enemy_set, moving_platform_set, moving_up_platform_set, coin_set;
 		enemy_set.loadFromFile("textures/enemy_set.png");
 		moving_platform_set.loadFromFile("textures/moving_platform.png");
+		moving_up_platform_set.loadFromFile("textures/moving_up_platform.png");
 		coin_set.loadFromFile("textures/coin.png");
 
 		Font font;
@@ -124,6 +129,16 @@ bool gameLoop() {
 				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 96, 32, Right));
 
 			}
+
+			if (scene_object.type == "moving up platform") {
+
+				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32, Up));
+
+			}
+
+			if (scene_object.type == "ExtraLife") {
+				entities.push_front(std::make_unique <ExtraLife> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32));
+			}
 		}
 	
 		/* ----- Adding animations ----- */
@@ -137,21 +152,39 @@ bool gameLoop() {
 				(*entities_it)->editor.addAnimation("Moving", moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
 			}
 
+			if ((*entities_it)->type == "moving up platform") {
+				(*entities_it)->editor.addAnimation("Moving Up", moving_up_platform_set, 0, 0, 32, 32, 1, 0, 0);
+			}
+
 			if ((*entities_it)->type == "coin") {
 				(*entities_it)->editor.addAnimation("Spinning", coin_set, 0, 0, 32, 32, 4, 0.008, 32);
 			}
+
+			if ((*entities_it)->type == "ExtraLife") {
+				(*entities_it)->editor.addAnimation("Staying", full_heart, 0, 0, 32, 32, 1, 0, 0);
+			}
 		}
+
 
 		main_theme.play();
 		main_theme.setLoop(true);
 
 		Clock clock;
+		bool isInvulnerable = false;
+		float invulnerableCheckTime = INFINITY;
+		float globalTime = 0.f;
 
 		while (window.isOpen())
 		{
-			float time = clock.getElapsedTime().asMicroseconds();
+			float time = clock.getElapsedTime().asSeconds();
+			globalTime += time;
 			clock.restart();
-			time /= settings.timeCoef;
+			time *= settings.timeCoef;
+			
+			if ((globalTime - invulnerableCheckTime) >= 2.f) {
+				invulnerableCheckTime = INFINITY;
+				isInvulnerable = false;
+			}
 
 			Event event;
 			while (window.pollEvent(event))
@@ -162,7 +195,8 @@ bool gameLoop() {
 				}
 			}
 			
-			
+			// TODO(me): Think if joystick processing should be done separately and if speeed should be able to be changed by joystick movement.
+
 			Vector2f joystick_pos = Vector2f(Joystick::getAxisPosition(0, Joystick::X), Joystick::getAxisPosition(0, Joystick::Y));
 
 			if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A) || joystick_pos.x < -15.f) {
@@ -207,7 +241,7 @@ bool gameLoop() {
 
 			current_view_center = view.getCenter();
 
-			if ((player.rect.top > view.getSize().y / 2 && player.rect.top < scene.getSize().second * scene.getTileSize().second - view.getSize().y / 2)) {
+			if ((player.rect.top > view.getSize().y / 2 && player.rect.top < scene.getSize().y * scene.getTileSize().y - view.getSize().y / 2)) {
 				view.setCenter(current_view_center.x, player.rect.top);
 			}
 
@@ -215,7 +249,7 @@ bool gameLoop() {
 
 			for (entities_it = entities.begin(); entities_it != entities.end();) {
 				(*entities_it)->update(time);
-				if ((*entities_it)->state == Entity::Dead)
+				if ((*entities_it)->state == Dead)
 					entities_it = entities.erase(entities_it);
 				else
 					entities_it++;
@@ -229,13 +263,17 @@ bool gameLoop() {
 						if (player.speed.y > 0) {
 							(*entities_it)->speed.x = 0;
 							player.speed.y *= (-1);
-							(*entities_it)->state = Entity::Dead;
+							(*entities_it)->state = Dead;
 						}
-						else if ((*entities_it)->state != Entity::Dead) {
-							if (lives.getCurrentLives() == 0) 
+						else if ((*entities_it)->state != Dead && !isInvulnerable) {
+							if (lives.getCurrentLives() == 1) 
 								return true;
-							else
-								lives.deleteLive();
+							else {
+								player.state = Invulnerable;
+								invulnerableCheckTime = globalTime;
+								isInvulnerable = true;
+								lives--;
+							}
 						}
 							
 					}
@@ -249,7 +287,23 @@ bool gameLoop() {
 							player.rect.left += (player.speed.x / 10 + (*entities_it)->speed.x)*time;
 
 							player.isOnGround = true;
-							player.state = Entity::Staying;
+							player.state = Staying;
+						}
+						else if (player.speed.y < 0) {
+							player.rect.top = (*entities_it)->rect.top + 32;
+							player.speed.y = 0;
+						}
+					}
+
+					else if ((*entities_it)->type == "moving up platform") {
+						if (player.speed.y > 0) {
+							player.rect.top = (*entities_it)->rect.top - player.rect.height;
+							player.speed.y = 0;
+							MoveDirection player_dir = player.getDirection();
+							MoveDirection platform_dir = (*entities_it)->getDirection();
+							player.rect.top += (*entities_it)->speed.y*time;
+							player.isOnGround = true;
+							player.state = Staying;
 						}
 						else if (player.speed.y < 0) {
 							player.rect.top = (*entities_it)->rect.top + 32;
@@ -258,13 +312,17 @@ bool gameLoop() {
 					}
 					else if ((*entities_it)->type == "coin") {
 						coin.play();
-						(*entities_it)->state = Entity::Dead;
+						(*entities_it)->state = Dead;
 						score += 100;
 					}
-
+					else if ((*entities_it)->type == "ExtraLife") {
+						(*entities_it)->state = Dead;
+						lives++;
+					}
+					
 				}
 			}
-
+			
 			game_rt.clear();
 			game_rt.setView(view);
 
@@ -281,9 +339,9 @@ bool gameLoop() {
 
 			game_with_ui_rt.draw(Sprite(game_rt.getTexture()));
 
-			for (widgets_it = ui_widgets.begin(); widgets_it != ui_widgets.end(); widgets_it++)
-				(*widgets_it)->draw(game_with_ui_rt);
-
+			
+			score.draw(game_with_ui_rt);
+			lives.draw(game_with_ui_rt);
 			game_with_ui_rt.display();
 
 			window.clear();

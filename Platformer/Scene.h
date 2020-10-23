@@ -6,13 +6,6 @@
 
 using namespace std;
 
-struct Size {
-	int first;
-	int second;
-	Size() {};
-	Size(int fst, int scd) { first = fst; second = scd; }
-};
-
 struct Object{
 	sf::FloatRect rect;
 	sf::Sprite sprite;
@@ -31,7 +24,7 @@ struct Layer{
 
 class Scene{
 private:
-	Size size, tileSize;
+	sf::Vector2f size, tileSize;
 	int firstTileGID; 
 	int spacing;
 	vector <Layer> layers;
@@ -43,8 +36,8 @@ public:
 	vector <Object> getObjectsByType(string) const;
 	vector <Object> getAllObjects() const;
 	Object getFirstObject(string) const;
-	Size getTileSize() const;
-	Size getSize() const;
+	sf::Vector2f getTileSize() const;
+	sf::Vector2f getSize() const;
 	int getSpacing() const;
 	void draw(sf::RenderWindow&) const;
 	void draw(sf::RenderTexture&) const;

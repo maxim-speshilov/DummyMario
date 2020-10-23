@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="275">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="326">
  <tileset firstgid="1" source="tiles3.tsx"/>
  <objectgroup id="2" name="Слой объектов 1">
   <object id="2" type="Solid" x="576" y="1088.13" width="96.125" height="96"/>
@@ -44,7 +44,7 @@
     <property name="Direction" value="Right"/>
    </properties>
   </object>
-  <object id="40" name="Enemy" type="Solid" x="1576" y="1168">
+  <object id="40" name="Enemy" type="enemy" x="1576" y="1168">
    <properties>
     <property name="Direction" value="Right"/>
    </properties>
@@ -84,7 +84,7 @@
   <object id="85" name="Coin" type="coin" x="1403.67" y="1015.17" width="32" height="32"/>
   <object id="86" name="Coin" type="coin" x="1435.67" y="1014.84" width="32" height="32"/>
   <object id="87" name="Coin" type="coin" x="1297" y="1138.33" width="32" height="32"/>
-  <object id="88" name="Coin" type="Solid" x="1553" y="1137" width="32" height="32"/>
+  <object id="88" name="Coin" type="coin" x="1553" y="1137" width="32" height="32"/>
   <object id="89" name="Coin" type="coin" x="64" y="736" width="32" height="32"/>
   <object id="90" name="Coin" type="coin" x="256" y="1139" width="32" height="32"/>
   <object id="91" name="Coin" type="coin" x="481" y="1141" width="32" height="32"/>
@@ -217,8 +217,64 @@
   <object id="260" name="Coin" type="coin" x="991.667" y="415.833" width="32" height="32"/>
   <object id="261" name="Coin" type="coin" x="1024.33" y="415.5" width="32" height="32"/>
   <object id="263" type="Solid" x="-15.3333" y="320.667" width="15.3333" height="158"/>
-  <object id="264" name="Moving Platform" type="moving platform" x="33.875" y="896.75" width="96.25" height="32.5"/>
   <object id="265" name="Enemy border" type="Enemy border" x="84.9773" y="672.08" width="11.0739" height="32.0227"/>
+  <object id="275" name="Enemy Border" type="Enemy border" x="510.5" y="579" width="2.75" height="28"/>
+  <object id="276" name="Coin" type="coin" x="623" y="219.25" width="32" height="32"/>
+  <object id="277" name="Coin" type="coin" x="655" y="219.583" width="32" height="32"/>
+  <object id="278" name="Coin" type="coin" x="687.667" y="219.25" width="32" height="32"/>
+  <object id="279" name="Coin" type="coin" x="719.667" y="220.25" width="32" height="32"/>
+  <object id="280" name="Coin" type="coin" x="622.333" y="251.416" width="32" height="32"/>
+  <object id="281" name="Coin" type="coin" x="654.333" y="251.75" width="32" height="32"/>
+  <object id="282" name="Coin" type="coin" x="687" y="251.416" width="32" height="32"/>
+  <object id="283" name="Coin" type="coin" x="719" y="252.416" width="32" height="32"/>
+  <object id="284" name="Coin" type="coin" x="622.667" y="283.75" width="32" height="32"/>
+  <object id="285" name="Coin" type="coin" x="654.667" y="284.083" width="32" height="32"/>
+  <object id="286" name="Coin" type="coin" x="687.334" y="283.75" width="32" height="32"/>
+  <object id="287" name="Coin" type="coin" x="719.334" y="284.75" width="32" height="32"/>
+  <object id="288" name="Moving up platform" type="moving up platform" x="672.833" y="384" width="32.3333" height="32"/>
+  <object id="289" name="Platform border" type="Platform border" x="672.667" y="467.833" width="31.3333" height="1.66667"/>
+  <object id="293" name="Moving up platform" type="moving up platform" x="158.364" y="960.182" width="31.4545" height="31.0909"/>
+  <object id="294" name="Platfrom border" type="Platform border" x="158.848" y="1048.18" width="33.6364" height="1.63636"/>
+  <object id="295" name="Platform border" type="Platform border" x="155.182" y="862.182" width="33.6364" height="1.63636"/>
+  <object id="296" name="Platform border" type="Platform border" x="666.682" y="228.682" width="33.6364" height="1.63636"/>
+  <object id="297" name="Extra life" type="ExtraLife" x="64" y="156.25" width="32" height="32"/>
+  <object id="299" name="Enemy" type="enemy" x="96" y="464">
+   <properties>
+    <property name="Direction" value="Right"/>
+   </properties>
+  </object>
+  <object id="300" name="Enemy border" type="Enemy border" x="541.091" y="447.273" width="2.36364" height="30.9091"/>
+  <object id="301" name="Enemy border" type="Enemy border" x="64.1932" y="348.295" width="2.36364" height="30.9091"/>
+  <object id="302" name="Enemy" type="enemy" x="224" y="368">
+   <properties>
+    <property name="Direction" value="Right"/>
+   </properties>
+  </object>
+  <object id="303" name="Enemy" type="enemy" x="1046" y="16">
+   <properties>
+    <property name="Direction" value="Right"/>
+   </properties>
+  </object>
+  <object id="304" name="Enemy border" type="Enemy border" x="927.625" y="11.625" width="2.5" height="19.125"/>
+  <object id="305" name="Enemy border" type="Enemy border" x="1407.25" y="10.1875" width="2.5" height="19.125"/>
+  <object id="306" name="Coin" type="coin" x="1024" y="96" width="32" height="32"/>
+  <object id="307" x="1031.5" y="103.625"/>
+  <object id="310" name="Coin" type="coin" x="1056" y="96" width="32" height="32"/>
+  <object id="311" name="Coin" type="coin" x="1088.13" y="95.875" width="32" height="32"/>
+  <object id="312" name="Coin" type="coin" x="1120.13" y="95.875" width="32" height="32"/>
+  <object id="313" name="Coin" type="coin" x="1152" y="95.875" width="32" height="32"/>
+  <object id="314" name="Coin" type="coin" x="1184" y="95.875" width="32" height="32"/>
+  <object id="315" name="Coin" type="coin" x="1215.95" y="96.2232" width="32" height="32"/>
+  <object id="316" x="1223.45" y="103.848"/>
+  <object id="317" name="Coin" type="coin" x="1247.95" y="96.2232" width="32" height="32"/>
+  <object id="318" name="Coin" type="coin" x="1280.08" y="96.0982" width="32" height="32"/>
+  <object id="319" name="Coin" type="coin" x="1312.08" y="96.0982" width="32" height="32"/>
+  <object id="320" name="Coin" type="coin" x="1343.95" y="96.0982" width="32" height="32"/>
+  <object id="321" name="Coin" type="coin" x="1375.95" y="96.0982" width="32" height="32"/>
+  <object id="322" name="Moving up platform" type="moving up platform" x="863.833" y="224" width="32.3333" height="32"/>
+  <object id="323" name="Platform border" type="Platform border" x="863.333" y="321.167" width="31.3333" height="1.66667"/>
+  <object id="324" name="Platform border" type="Platform border" x="863.667" y="127.167" width="31.3333" height="1.66667"/>
+  <object id="325" name="Extra life" type="ExtraLife" x="225" y="991" width="32" height="32"/>
  </objectgroup>
  <layer id="6" name="Слой тайлов 1" width="50" height="40">
   <data>

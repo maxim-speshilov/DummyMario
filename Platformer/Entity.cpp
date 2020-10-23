@@ -15,6 +15,14 @@ MoveDirection Entity::getDirection() {
 
 // TODO(me): Sliding processing while being on slope  
 
+Player::Player(Scene& level, Vector2f pos, int width, int height) :
+	Entity(level, pos, width, height) {
+	state = Staying;
+	type = "player";
+	isOnGround = true;
+	speed = Vector2f(0, 0);
+}
+
 void Player::mapProcessing(int direction){
 
 	for (auto object : levelObjects){
@@ -130,14 +138,6 @@ void Player::mapProcessing(int direction){
 	}
 }
 
-Player::Player(Scene& level, Vector2f pos, int width, int height) : 
-Entity(level, pos, width, height){
-	state = Staying;
-	type = "player";
-	isOnGround = true;
-	speed = Vector2f(0, 0);
-}
-
 void Player::update(float time){
 
 	if (speed.y != 0) {
@@ -191,29 +191,29 @@ void Player::keyboardProcessing(){
 		if (state == Staying)
 			state = Running;
 		direction = Left;
-		speed.x = -0.1;
+		this->speed.x = -key_speed.x;
 	}
 
 	if (isKeyPressed["Right"]){
 		if (state == Staying)
 			state = Running;
 		direction = Right;
-		speed.x = 0.1;
+		this->speed.x = key_speed.x;
 	}
 
 	if (isKeyPressed["Up"]){
 		if (state == Swimming)
-			speed.y = -0.05;
+			speed.y = -key_speed.y / 10;
 		else if (state != Jumping){
 			state = Jumping;
 			isOnGround = false;
-			speed.y = -0.65;
+			speed.y = -key_speed.y;
 		}
 	}
 
 	if (isKeyPressed["Down"]){
 		if (state == Swimming)
-			speed.y = 0.05;
+			speed.y = key_speed.y / 10;
 		else if (state == Running){
 			state = Rolling;
 		}
@@ -236,6 +236,10 @@ void Player::keyboardProcessing(){
 	}
 
 
+}
+
+void Player::setKeySpeed(Vector2f speed) {
+	key_speed = speed;
 }
 
 Enemy::Enemy(Scene& level, Vector2f position, int width, int height, MoveDirection direction):
@@ -301,17 +305,33 @@ MovingPlatform::MovingPlatform(Scene& level, Vector2f position, int width, int h
 
 	if (direction == Right)
 		speed = Vector2f(0.1, 0);
-	else
+	if (direction == Left)
 		speed = Vector2f(-0.1, 0);
+	if (direction == Up)
+		speed = Vector2f(0, -0.1);
+	if (direction == Down)
+		speed = Vector2f(0, 0.1);
+	
+	if ((direction == Left) || (direction == Right))
+		type = "moving platform";
+	else
+		type = "moving up platform";
 
-	type = "moving platform";
 	timeToTurn = 0;	
 }
 
 void MovingPlatform::update(float time){
-	rect.left += speed.x * time;
+	if ((direction == Left) || (direction == Right))
+		rect.left += speed.x * time;
+	if ((direction == Up) || (direction == Down))
+		rect.top += speed.y * time;
+
 	mapProcessing();
-	editor.setAnimation("Moving");
+	if ((direction == Left) || (direction == Right))
+		editor.setAnimation("Moving");
+	if ((direction == Up) || (direction == Down))
+		editor.setAnimation("Moving Up");
+
 	editor.shiftAnimation(time);
 }
 
@@ -319,16 +339,26 @@ void MovingPlatform::mapProcessing()
 {
 	for (auto object : levelObjects)
 		if (rect.intersects(object->rect)) {
-			if (object->type == "Solid") {
+			if (object->type == "Solid" || object->type == "Platform border") {
 				if (direction == Right) {
 					rect.left = object->rect.left - rect.width;
 					direction = Left;
 					speed.x *= -1;
 				}
-				else {
+				else if (direction == Left) {
 					rect.left = object->rect.left + object->rect.width;
 					direction = Right;
 					speed.x *= -1;
+				}
+				else if (direction == Up) {
+					rect.top = object->rect.top + object->rect.height;
+					direction = Down;
+					speed.y *= -1;
+				}
+				else if (direction == Down) {
+					rect.top = object->rect.top - rect.height;
+					direction = Up;
+					speed.y *= -1;
 				}
 			}
 		}
@@ -346,5 +376,17 @@ Coin::Coin(Scene& level, Vector2f position, int width, int height) :
 
 void Coin::update(float time) {
 	editor.setAnimation("Spinning");
+	editor.shiftAnimation(time);
+}
+
+ExtraLife::ExtraLife(Scene& scene, Vector2f position, int width, int height) :
+	Entity(scene, position, width, height) {
+	speed = Vector2f(0, 0);
+	direction = Nowhere;
+	type = "ExtraLife";
+}
+
+void ExtraLife::update(float time) {
+	editor.setAnimation("Staying");
 	editor.shiftAnimation(time);
 }

@@ -12,11 +12,11 @@ map <string, string> Object::getProperties() const{
 Scene::Scene() {
 };
 
-Size Scene::getSize() const{
+sf::Vector2f Scene::getSize() const{
 	return size;
 }
 
-Size Scene::getTileSize() const{
+sf::Vector2f Scene::getTileSize() const{
 	return tileSize;
 }
 
@@ -62,8 +62,8 @@ bool Scene::loadFromXmlFile(const char* filename){
 		return false;
 
 	TiXmlElement *map = levelFile.FirstChildElement("map");
-	size = Size(atoi(map->Attribute("width")), atoi(map->Attribute("height")));
-	tileSize = Size(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
+	size = sf::Vector2f(atoi(map->Attribute("width")), atoi(map->Attribute("height")));
+	tileSize = sf::Vector2f(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
 
 
 	TiXmlElement *tileset = map->FirstChildElement("tileset");
@@ -94,7 +94,7 @@ bool Scene::loadFromXmlFile(const char* filename){
 
 	for (int i = 0; i < numberOfRows; i++)
 		for (int j = 0; j < numberOfColumns; j++)
-			tileRects.push_back(sf::IntRect(j * (tileSize.first + spacing), i * (tileSize.second + spacing), tileSize.first, tileSize.second));
+			tileRects.push_back(sf::IntRect(j * (tileSize.x + spacing), i * (tileSize.y + spacing), tileSize.x, tileSize.y));
 
 	TiXmlElement *layerElement = map->FirstChildElement("layer");
 	while (layerElement){
@@ -111,14 +111,14 @@ bool Scene::loadFromXmlFile(const char* filename){
 
 		TiXmlElement *tileElement = dataElement->FirstChildElement("tile");
 
-		for (int i = 0; i < size.second; i++)
-			for (int j = 0; j < size.first; j++)
+		for (int i = 0; i < size.y; i++)
+			for (int j = 0; j < size.x; j++)
 				if (tileElement){
 					int tileGID = atoi(tileElement->Attribute("gid"));
 					sf::Sprite sprite;
 
 					sprite.setTexture(tilesetTexture);
-					sprite.setPosition(j*tileSize.first, i*tileSize.second);
+					sprite.setPosition(j*tileSize.x, i*tileSize.y);
 					sprite.setTextureRect(tileRects[tileGID - firstTileGID]);
 					sprite.setColor(sf::Color(255, 255, 255, layer.opacity));
 					layer.tileset.push_back(sprite);

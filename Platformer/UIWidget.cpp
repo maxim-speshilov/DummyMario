@@ -48,8 +48,9 @@ UIWidget(pos) {
 }
 
 void Lives::addLives(int n_of_lives) {
+	if (currentNumberOfLives == numberOfLives)
+		numberOfLives += n_of_lives;
 	currentNumberOfLives += n_of_lives;
-	numberOfLives += n_of_lives;
 }
 
 void Lives::deleteLive() {
