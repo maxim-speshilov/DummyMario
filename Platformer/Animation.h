@@ -32,4 +32,5 @@ public:
 	void shiftAnimation(float);
 	void drawAnimation(RenderWindow&, int, int);
 	void drawAnimation(RenderTexture&, int x, int y);
+	void drawAnimationByName(String, RenderTexture&, int, int);
 };

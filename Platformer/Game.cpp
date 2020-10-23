@@ -14,6 +14,7 @@ struct GameSettings {
 
 GameSettings settings;
 
+// TODO(me) : Make player invulnerable atfer touching an enemy.
 bool gameLoop() {
 
 	for (auto levelFileName : settings.levelsFileNames) {
@@ -85,10 +86,18 @@ bool gameLoop() {
 
 		Score score(Vector2f(8, 8), Text(String("0"), font), 0);
 
+		Texture full_heart, void_heart;
+		Lives lives(Vector2f(screen_width - 34, 10.f), 3, 3);
+		full_heart.loadFromFile("textures/full_heart.png");
+		void_heart.loadFromFile("textures/void_heart.png");
+		lives.editor.addAnimation("full heart", full_heart, 0, 0, 32, 32, 1, 0, 0);
+		lives.editor.addAnimation("void heart", void_heart, 0, 0, 32, 32, 1, 0, 0);
+		
 		std::list <UIWidget*> ui_widgets;
 		std::list <UIWidget*>::iterator widgets_it;
 
 		ui_widgets.push_front(&score);
+		ui_widgets.push_front(&lives);
 
 		vector <Object> level_objects = level.getAllObjects();
 
@@ -197,6 +206,8 @@ bool gameLoop() {
 				view.setCenter(current_view_center.x, player.rect.top);
 			}
 
+			/* ----- Entities updating -----*/
+
 			for (entities_it = entities.begin(); entities_it != entities.end();) {
 				(*entities_it)->update(time);
 				if ((*entities_it)->state == Entity::Dead)
@@ -204,6 +215,8 @@ bool gameLoop() {
 				else
 					entities_it++;
 			}
+
+			/* ----- Entities processing -----*/
 
 			for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
 				if (player.rect.intersects((*entities_it)->rect)) {
@@ -213,8 +226,13 @@ bool gameLoop() {
 							player.speed.y *= (-1);
 							(*entities_it)->state = Entity::Dead;
 						}
-						else if ((*entities_it)->state != Entity::Dead)
-							return true;
+						else if ((*entities_it)->state != Entity::Dead) {
+							if (lives.getCurrentLives() == 0) 
+								return true;
+							else
+								lives.deleteLive();
+						}
+							
 					}
 					else if ((*entities_it)->type == "moving platform") {
 						if (player.speed.y > 0) {

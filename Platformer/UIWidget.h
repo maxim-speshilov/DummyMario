@@ -22,12 +22,29 @@ public:
 class Score : public UIWidget {
 private:
 	int score;
-	Text widget_object;
+	Text text_object;
 public:
 	Score(Vector2f, Text&, int);
 	void setScore(int);
 	int getScore() const;
 	void draw(sf::RenderWindow&) override;
 	void draw(sf::RenderTexture&) override;
+	void addScore(int);
 	Score& operator+= (int);
+};
+
+class Lives : public UIWidget {
+private:
+	unsigned int numberOfLives;
+	unsigned int currentNumberOfLives;
+public:
+	Lives(Vector2f, int, int);
+	void draw(sf::RenderWindow&) override;
+	void draw(sf::RenderTexture&) override;
+	int getCurrentLives() const;
+	void addLives(int);
+	void deleteLive();
+	Lives& operator+= (int);
+	Lives& operator++ ();
+	Lives& operator-- ();
 };

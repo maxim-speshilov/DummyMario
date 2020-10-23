@@ -67,3 +67,8 @@ void AnimationEditor::drawAnimation(RenderTexture &rt, int x, int y){
 	animationMap[keyName].sprite.setPosition(x, y);
 	rt.draw(animationMap[keyName].sprite);
 }
+
+void AnimationEditor::drawAnimationByName(String key_name, RenderTexture &rt, int x, int y) {
+	animationMap[key_name].sprite.setPosition(x, y);
+	rt.draw(animationMap[key_name].sprite);
+}
