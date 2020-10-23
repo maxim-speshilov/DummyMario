@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="265">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="275">
  <tileset firstgid="1" source="tiles3.tsx"/>
  <objectgroup id="2" name="Слой объектов 1">
   <object id="2" type="Solid" x="576" y="1088.13" width="96.125" height="96"/>
@@ -93,7 +93,7 @@
   <object id="94" name="Coin" type="coin" x="769.333" y="1144.5" width="32" height="32"/>
   <object id="95" name="Coin" type="coin" x="801.333" y="1145.5" width="32" height="32"/>
   <object id="113" type="Solid" x="192.917" y="864.167" width="159.417" height="31.8333"/>
-  <object id="114" type="Solid" x="96" y="703.333" width="447.333" height="31.3333"/>
+  <object id="114" type="Solid" x="96.3182" y="703.742" width="446.788" height="32.4242"/>
   <object id="116" type="Solid" x="512.667" y="640" width="30.6667" height="63.3333"/>
   <object id="119" type="Solid" x="0" y="640" width="512" height="30"/>
   <object id="120" type="Solid" x="0" y="670" width="31.3333" height="193.333"/>
@@ -117,7 +117,7 @@
   <object id="139" type="Solid" x="832" y="735.5" width="258" height="32"/>
   <object id="140" type="Solid" x="1088" y="704" width="32" height="32.5"/>
   <object id="142" type="Solid" x="1090.18" y="736.727" width="28.3636" height="446.879"/>
-  <object id="149" name="Enemy" type="enemy" x="101.583" y="1163.83">
+  <object id="149" name="Enemy" type="enemy" x="101.583" y="1168">
    <properties>
     <property name="Direction" value="Right"/>
    </properties>
@@ -171,7 +171,7 @@
   <object id="208" type="Solid" x="799.5" y="0" width="639" height="1"/>
   <object id="209" type="Solid" x="416" y="63.75" width="32" height="96"/>
   <object id="210" name="Moving Platform" type="moving platform" x="640.667" y="63.3333" width="96" height="32.6667"/>
-  <object id="211" name="Enemy" type="enemy" x="303.5" y="688" width="16" height="16">
+  <object id="211" name="Enemy" type="enemy" x="439.5" y="686.75" width="16" height="16">
    <properties>
     <property name="Direction" value="Right"/>
    </properties>
@@ -218,6 +218,7 @@
   <object id="261" name="Coin" type="coin" x="1024.33" y="415.5" width="32" height="32"/>
   <object id="263" type="Solid" x="-15.3333" y="320.667" width="15.3333" height="158"/>
   <object id="264" name="Moving Platform" type="moving platform" x="33.875" y="896.75" width="96.25" height="32.5"/>
+  <object id="265" name="Enemy border" type="Enemy border" x="84.9773" y="672.08" width="11.0739" height="32.0227"/>
  </objectgroup>
  <layer id="6" name="Слой тайлов 1" width="50" height="40">
   <data>

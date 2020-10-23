@@ -14,18 +14,17 @@ struct GameSettings {
 
 GameSettings settings;
 
-// TODO(me) : Make player invulnerable atfer touching an enemy.
+// TODO(me) : ake player invulnerable atfer touching an enemy.
 bool gameLoop() {
 
 	for (auto levelFileName : settings.levelsFileNames) {
 
 		bool boo = false, boo1 = false;
 
-		Level level;
+		Scene scene;
 
-		if (!level.loadFromXmlFile(levelFileName))
+		if (!scene.loadFromXmlFile(levelFileName))
 			throw logic_error("Failed to open map file");
-
 
 		Music main_theme;
 		if (!main_theme.openFromFile("sounds/Mario_Theme.ogg"))
@@ -55,8 +54,8 @@ bool gameLoop() {
 		RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Titlebar | Style::Close | Style::Resize);
 		window.setMouseCursorVisible(false);
 
-		unsigned int level_width = level.getSize().first * level.getTileSize().first;
-		unsigned int level_height = level.getSize().second * level.getTileSize().second;
+		unsigned int level_width = scene.getSize().first * scene.getTileSize().first;
+		unsigned int level_height = scene.getSize().second * scene.getTileSize().second;
 
 
 		RenderTexture game_rt;
@@ -68,7 +67,7 @@ bool gameLoop() {
 		view.reset(sf::FloatRect(0.f, level_height - (float)screen_height, screen_width, screen_height));
 
 		Texture running_set, rolling_set, jumping_set;
-		Player player(level, { level.getObjectsByType("player").at(0).rect.left, level.getObjectsByType("player").at(0).rect.top }, 23, 28);
+		Player player(scene, { scene.getObjectsByType("player").at(0).rect.left, scene.getObjectsByType("player").at(0).rect.top }, 23, 28);
 
 		running_set.loadFromFile("textures/run_set.png"); rolling_set.loadFromFile("textures/rolling_set.png"), jumping_set.loadFromFile("textures/jump_set.png");
 		player.editor.addAnimation("Running", running_set, 0, 0, 23, 28, 8, 0.005, 23);
@@ -93,39 +92,41 @@ bool gameLoop() {
 		lives.editor.addAnimation("full heart", full_heart, 0, 0, 32, 32, 1, 0, 0);
 		lives.editor.addAnimation("void heart", void_heart, 0, 0, 32, 32, 1, 0, 0);
 		
-		std::list <UIWidget*> ui_widgets;
-		std::list <UIWidget*>::iterator widgets_it;
+		std::list <std::unique_ptr<UIWidget>> ui_widgets;
+		std::list <std::unique_ptr<UIWidget>>::iterator widgets_it;
 
-		ui_widgets.push_front(&score);
-		ui_widgets.push_front(&lives);
+		ui_widgets.push_front(std::make_unique <Score> (score));
+		ui_widgets.push_front(std::make_unique <Lives> (lives));
 
-		vector <Object> level_objects = level.getAllObjects();
+		vector <Object> scene_objects = scene.getAllObjects();
+			
+		std::list <std::unique_ptr<Entity>> entities;
+		std::list <std::unique_ptr<Entity>>::iterator entities_it;
 
-		std::list <shared_ptr<Entity>> entities;
-		std::list <shared_ptr<Entity>>::iterator entities_it;
+		/* ----- Adding entities ----- */
+		for (Object scene_object : scene.getAllObjects()) {
 
-		for (Object level_object : level.getAllObjects()) {
-
-			if (level_object.type == "enemy") {
+			if (scene_object.type == "enemy") {
 				MoveDirection dir;
-				if (level_object.getPropertyByName("Direction") == "Right")
+				if (scene_object.getPropertyByName("Direction") == "Right")
 					dir = Right;
 				else
 					dir = Left;
-				entities.push_front(make_shared<Enemy>(level, Vector2f(level_object.rect.left, level_object.rect.top), 16, 16, dir));
+				entities.push_front(std::make_unique <Enemy> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 16, 16, dir));
 
 			} 
-			if (level_object.type == "coin") {
-				entities.push_front(make_shared<Coin>(level, Vector2f(level_object.rect.left, level_object.rect.top), 32, 32));
+			if (scene_object.type == "coin") {
+				entities.push_front(std::make_unique <Coin> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32));
 			}
 
-			if (level_object.type == "moving platform") {
+			if (scene_object.type == "moving platform") {
 
-				entities.push_front(make_shared<MovingPlatform>(level, Vector2f(level_object.rect.left, level_object.rect.top), 96, 32, Right));
+				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 96, 32, Right));
 
 			}
 		}
 	
+		/* ----- Adding animations ----- */
 		for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
 			if ((*entities_it)->type == "enemy") {
 				(*entities_it)->editor.addAnimation("Running", enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
@@ -155,29 +156,33 @@ bool gameLoop() {
 			Event event;
 			while (window.pollEvent(event))
 			{
-				if ((event.type == Event::Closed)) {
+				if (event.type == Event::Closed) {
 					window.close();
 					return false;
 				}
 			}
+			
+			
+			Vector2f joystick_pos = Vector2f(Joystick::getAxisPosition(0, Joystick::X), Joystick::getAxisPosition(0, Joystick::Y));
 
-			if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A)) {
-				player.isKeyPressed["Left"] = true;
-			}
-			if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D)) {
-				player.isKeyPressed["Right"] = true;
-			}
-			if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W)) {
-				player.isKeyPressed["Up"] = true;
-				if ((player.isOnGround) && jump.getStatus() != SoundSource::Playing)
-					jump.play();
-			}
-			if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S)) {
-				player.isKeyPressed["Down"] = true;
-			}
+			if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A) || joystick_pos.x < -15.f) {
+					player.isKeyPressed["Left"] = true;
+				}
+			if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D) || joystick_pos.x > 15.f) {
+					player.isKeyPressed["Right"] = true;
+				}
+			if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W) || Joystick::isButtonPressed(0, 1)) {
+					player.isKeyPressed["Up"] = true;
+					if ((player.isOnGround) && jump.getStatus() != SoundSource::Playing)
+						jump.play();
+				}
+			if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S) || joystick_pos.y > 15.f) {
+					player.isKeyPressed["Down"] = true;
+				}
 			if (Keyboard::isKeyPressed(Keyboard::Escape)) {
-				return false;
-			}
+					return false;
+				}
+			
 
 			if (!boo) {
 				time = 0;
@@ -186,7 +191,7 @@ bool gameLoop() {
 
 			player.update(time);
 
-			if (player.rect.intersects(level.getFirstObject("ExitPipe").rect)) {
+			if (player.rect.intersects(scene.getFirstObject("ExitPipe").rect)) {
 				settings.levelCount++;
 				window.clear(Color::Black);
 				break;
@@ -202,7 +207,7 @@ bool gameLoop() {
 
 			current_view_center = view.getCenter();
 
-			if ((player.rect.top > view.getSize().y / 2 && player.rect.top < level.getSize().second * level.getTileSize().second - view.getSize().y / 2)) {
+			if ((player.rect.top > view.getSize().y / 2 && player.rect.top < scene.getSize().second * scene.getTileSize().second - view.getSize().y / 2)) {
 				view.setCenter(current_view_center.x, player.rect.top);
 			}
 
@@ -227,10 +232,10 @@ bool gameLoop() {
 							(*entities_it)->state = Entity::Dead;
 						}
 						else if ((*entities_it)->state != Entity::Dead) {
-							if (lives.getCurrentLives() == 0)
+							if (lives.getCurrentLives() == 0) 
 								return true;
 							else
-								lives--;
+								lives.deleteLive();
 						}
 							
 					}
@@ -263,7 +268,7 @@ bool gameLoop() {
 			game_rt.clear();
 			game_rt.setView(view);
 
-			level.draw(game_rt);
+			scene.draw(game_rt);
 
 			player.editor.drawAnimation(game_rt, player.rect.left, player.rect.top);
 

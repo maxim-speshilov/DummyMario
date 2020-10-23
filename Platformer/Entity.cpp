@@ -1,11 +1,13 @@
 #include "Entity.h"
 
-Entity::Entity(Level& level, Vector2f pos, int width, int height){
+Entity::Entity(Scene& level, Vector2f pos, int width, int height){
 	std::vector <Object> levelObjects = level.getAllObjects();
 	for (Object object : levelObjects)
 		this->levelObjects.push_back(std::make_shared<Object>(object));	
 	rect = FloatRect(pos.x, pos.y, width, height);
 }
+
+Entity::~Entity() {}
 
 MoveDirection Entity::getDirection() {
 	return this->direction;
@@ -128,7 +130,7 @@ void Player::mapProcessing(int direction){
 	}
 }
 
-Player::Player(Level& level, Vector2f pos, int width, int height) : 
+Player::Player(Scene& level, Vector2f pos, int width, int height) : 
 Entity(level, pos, width, height){
 	state = Staying;
 	type = "player";
@@ -236,7 +238,7 @@ void Player::keyboardProcessing(){
 
 }
 
-Enemy::Enemy(Level& level, Vector2f position, int width, int height, MoveDirection direction):
+Enemy::Enemy(Scene& level, Vector2f position, int width, int height, MoveDirection direction):
 	Entity(level, position, width, height){
 	state = Running;
 	type = "enemy";
@@ -276,7 +278,7 @@ void Enemy::mapProcessing(){
 
 	for (auto object : levelObjects)
 		if (rect.intersects(object->rect)) {
-			if (object->type == "Solid") {
+			if ((object->type == "Solid") || (object->type == "Enemy border")) {
 				if (direction == Right) {
 					rect.left = object->rect.left - rect.width;
 						direction = Left;
@@ -291,7 +293,7 @@ void Enemy::mapProcessing(){
 		}
 }
 
-MovingPlatform::MovingPlatform(Level& level, Vector2f position, int width, int height, MoveDirection direction) :
+MovingPlatform::MovingPlatform(Scene& level, Vector2f position, int width, int height, MoveDirection direction) :
 	Entity(level, position, width, height){
 
 	state = Running;
@@ -334,7 +336,7 @@ void MovingPlatform::mapProcessing()
 
 
 
-Coin::Coin(Level& level, Vector2f position, int width, int height) :
+Coin::Coin(Scene& level, Vector2f position, int width, int height) :
 	Entity(level, position, width, height) {
 	speed = Vector2f(0, 0);
 	direction = Nowhere;

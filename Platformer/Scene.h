@@ -29,7 +29,7 @@ struct Layer{
 	int opacity;
 };
 
-class Level{
+class Scene{
 private:
 	Size size, tileSize;
 	int firstTileGID; 
@@ -38,7 +38,7 @@ private:
 	vector <Object> objects;
 	sf::Texture tilesetTexture;
 public:
-	Level();
+	Scene();
 	bool loadFromXmlFile (const char*);
 	vector <Object> getObjectsByType(string) const;
 	vector <Object> getAllObjects() const;

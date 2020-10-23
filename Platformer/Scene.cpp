@@ -1,4 +1,4 @@
-#include "Level.h"
+#include "Scene.h"
 #include <iostream>
 
 string Object::getPropertyByName(string name) const{
@@ -9,22 +9,22 @@ map <string, string> Object::getProperties() const{
 	return properties;
 }
 
-Level::Level() {
+Scene::Scene() {
 };
 
-Size Level::getSize() const{
+Size Scene::getSize() const{
 	return size;
 }
 
-Size Level::getTileSize() const{
+Size Scene::getTileSize() const{
 	return tileSize;
 }
 
-int Level::getSpacing() const{
+int Scene::getSpacing() const{
 	return spacing;
 }
 
-vector <Object> Level::getObjectsByType(string type) const{
+vector <Object> Scene::getObjectsByType(string type) const{
 	vector <Object> result;
 
 	for (Object object : objects)
@@ -34,29 +34,29 @@ vector <Object> Level::getObjectsByType(string type) const{
 	return result;
 }
 
-Object Level::getFirstObject(string type) const {
+Object Scene::getFirstObject(string type) const {
 	for (Object object : objects)
 		if (object.type == type)
 			return object;
 }
 
-vector <Object> Level::getAllObjects() const{
+vector <Object> Scene::getAllObjects() const{
 	return objects;
 }
 
-void Level::draw(sf::RenderWindow &window) const{
+void Scene::draw(sf::RenderWindow &window) const{
 	for (Layer layer : layers)
 		for (sf::Sprite tile : layer.tileset)
 			window.draw(tile);
 }
 
-void Level::draw(sf::RenderTexture &rt) const {
+void Scene::draw(sf::RenderTexture &rt) const {
 	for (Layer layer : layers)
 		for (sf::Sprite tile : layer.tileset)
 			rt.draw(tile);
 }
 
-bool Level::loadFromXmlFile(const char* filename){
+bool Scene::loadFromXmlFile(const char* filename){
 	TiXmlDocument levelFile(filename);
 	if (!levelFile.LoadFile())
 		return false;

@@ -8,7 +8,7 @@
 #include <string>
 #include <SFML\Audio.hpp>
 #include "Animation.h"A
-#include "Level.h"
+#include "Scene.h"
 
 using namespace sf;
 
@@ -28,7 +28,8 @@ protected:
 	vector <std::shared_ptr<Object>> levelObjects;
 	string type;
 public:
-	Entity(Level&, Vector2f, int, int);
+	Entity(Scene&, Vector2f, int, int);
+	~Entity();
 	MoveDirection getDirection();
 	virtual void update(float) = 0;
 	friend bool gameLoop();
@@ -37,7 +38,7 @@ public:
 // TODO(me): Fix position bug that happens when resizing window.
 class Player : public Entity {
 public:
-	Player(Level&, Vector2f, int, int);
+	Player(Scene&, Vector2f, int, int);
 	bool isWounded, isOnPlatform;
 	std::map <String, bool> isKeyPressed;
 	void update(float) override;
@@ -48,7 +49,7 @@ public:
 
 class Enemy : public Entity{
 public:
-	Enemy(Level&, Vector2f, int, int, MoveDirection);
+	Enemy(Scene&, Vector2f, int, int, MoveDirection);
 	void update(float) override;
 	void mapProcessing();
 };
@@ -57,13 +58,13 @@ class MovingPlatform : public Entity{
 private:
 	float timeToTurn;
 public:
-	MovingPlatform (Level&, Vector2f, int, int, MoveDirection);
+	MovingPlatform (Scene&, Vector2f, int, int, MoveDirection);
 	void update(float) override;
 	void mapProcessing();
 };
 
 class Coin : public Entity {
 public:
-	Coin (Level&, Vector2f, int, int);
+	Coin (Scene&, Vector2f, int, int);
 	void update(float) override;
 };

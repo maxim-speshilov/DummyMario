@@ -21,9 +21,6 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="Level.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="tinystr.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -45,15 +42,15 @@
     <ClCompile Include="UIWidget.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Level.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="tinystr.h">
@@ -63,6 +60,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="UIWidget.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
