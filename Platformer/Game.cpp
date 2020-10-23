@@ -101,8 +101,8 @@ bool gameLoop() {
 
 		vector <Object> level_objects = level.getAllObjects();
 
-		std::list <Entity*> entities;
-		std::list <Entity*>::iterator entities_it;
+		std::list <shared_ptr<Entity>> entities;
+		std::list <shared_ptr<Entity>>::iterator entities_it;
 
 		for (Object level_object : level.getAllObjects()) {
 
@@ -112,16 +112,16 @@ bool gameLoop() {
 					dir = Right;
 				else
 					dir = Left;
-				entities.push_front(new Enemy(level, Vector2f(level_object.rect.left, level_object.rect.top), 16, 16, dir));
+				entities.push_front(make_shared<Enemy>(level, Vector2f(level_object.rect.left, level_object.rect.top), 16, 16, dir));
 
 			} 
 			if (level_object.type == "coin") {
-				entities.push_front(new Coin(level, Vector2f(level_object.rect.left, level_object.rect.top), 32, 32));
+				entities.push_front(make_shared<Coin>(level, Vector2f(level_object.rect.left, level_object.rect.top), 32, 32));
 			}
 
 			if (level_object.type == "moving platform") {
 
-				entities.push_front(new MovingPlatform(level, Vector2f(level_object.rect.left, level_object.rect.top), 96, 32, Right));
+				entities.push_front(make_shared<MovingPlatform>(level, Vector2f(level_object.rect.left, level_object.rect.top), 96, 32, Right));
 
 			}
 		}
@@ -227,10 +227,10 @@ bool gameLoop() {
 							(*entities_it)->state = Entity::Dead;
 						}
 						else if ((*entities_it)->state != Entity::Dead) {
-							if (lives.getCurrentLives() == 0) 
+							if (lives.getCurrentLives() == 0)
 								return true;
 							else
-								lives.deleteLive();
+								lives--;
 						}
 							
 					}
