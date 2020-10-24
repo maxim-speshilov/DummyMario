@@ -12,11 +12,34 @@
 
 using namespace sf;
 
-enum MoveDirection { Nowhere, Right, Left, Up, Down };
-enum EntityState { Staying, Running, Jumping, Rolling, Swimming, Climbing, Sliding, Dead, Invulnerable};
-
 // TODO(me): Change update. Change entity to avoid storing vector of pointers to level objects.
 class Entity{
+public:
+	enum MoveDirection 
+	{ 
+		Nowhere, 
+		Right, 
+		Left, 
+		Up, 
+		Down 
+	};
+	enum EntityState 
+	{ 
+		Staying, 
+		Running, 
+		Jumping, 
+		Rolling, 
+		Swimming, 
+		Climbing, 
+		Sliding, 
+		Dead, 
+		Invulnerable
+	};
+	Entity(Scene&, Vector2f, int, int);
+	~Entity();
+	MoveDirection getDirection();
+	virtual void update(float) = 0;
+	friend bool gameLoop();
 protected:
 	Vector2f speed;
 	float currentFrame;
@@ -27,12 +50,8 @@ protected:
 	AnimationEditor editor;
 	vector <std::shared_ptr<Object>> levelObjects;
 	string type;
-public:
-	Entity(Scene&, Vector2f, int, int);
-	~Entity();
-	MoveDirection getDirection();
-	virtual void update(float) = 0;
-	friend bool gameLoop();
+	float death_time_ = INFINITY;
+
 };
 
 // TODO(me): Fix position bug that happens when resizing window.
@@ -52,7 +71,7 @@ public:
 
 class Enemy : public Entity{
 public:
-	Enemy(Scene&, Vector2f, int, int, MoveDirection);
+	Enemy(Scene&, Vector2f, int, int, Entity::MoveDirection);
 	void update(float) override;
 	void mapProcessing();
 };

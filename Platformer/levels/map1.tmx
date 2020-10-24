@@ -274,7 +274,6 @@
   <object id="322" name="Moving up platform" type="moving up platform" x="863.833" y="224" width="32.3333" height="32"/>
   <object id="323" name="Platform border" type="Platform border" x="863.333" y="321.167" width="31.3333" height="1.66667"/>
   <object id="324" name="Platform border" type="Platform border" x="863.667" y="127.167" width="31.3333" height="1.66667"/>
-  <object id="325" name="Extra life" type="ExtraLife" x="225" y="991" width="32" height="32"/>
  </objectgroup>
  <layer id="6" name="Слой тайлов 1" width="50" height="40">
   <data>

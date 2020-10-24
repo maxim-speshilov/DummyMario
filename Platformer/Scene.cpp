@@ -116,7 +116,6 @@ bool Scene::loadFromXmlFile(const char* filename){
 				if (tileElement){
 					int tileGID = atoi(tileElement->Attribute("gid"));
 					sf::Sprite sprite;
-
 					sprite.setTexture(tilesetTexture);
 					sprite.setPosition(j*tileSize.x, i*tileSize.y);
 					sprite.setTextureRect(tileRects[tileGID - firstTileGID]);

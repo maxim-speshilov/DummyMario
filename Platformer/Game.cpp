@@ -18,10 +18,35 @@ GameSettings settings;
 // TODO(me) : Fix invulnerable implementation. It works but seems strange. 
 bool gameLoop() {
 
+	float screen_width = 480.f;
+	float screen_height = 600.f;
+
+	RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Default);
+	window.setMouseCursorVisible(false);
+	/* ----- Add this to set max number of frames per second -----*/
+	//window.setFramerateLimit(60);
+
+	window.clear(Color::Black);
+
+
 	for (auto levelFileName : settings.levelsFileNames) {
+		
+		Font font;
+		font.loadFromFile("fonts/SuperMario256.ttf");
 
-		bool boo = false, boo1 = false;
+		Text level_name;
+		level_name.setFillColor(Color::White);
+		level_name.setFont(font);
+		String level_name_string(string("Level ") + to_string(settings.levelCount + 1) + string(" loading..."));
+		level_name.setString(level_name_string);
+		unsigned int kCharacterSize = 30.f;
+		level_name.setCharacterSize(kCharacterSize);
+		level_name.setPosition(screen_width / 2 - 140, screen_height / 2 - 30);
 
+		window.draw(level_name);
+		window.display();
+
+		Clock clock;
 		Scene scene;
 
 		if (!scene.loadFromXmlFile(levelFileName))
@@ -32,6 +57,12 @@ bool gameLoop() {
 			throw logic_error("Failed to open music file");
 
 		main_theme.setVolume(80);
+
+		Music lost_a_life;
+		if (!lost_a_life.openFromFile("sounds/LostLife.ogg"))
+			throw logic_error("Failed to open music file");
+
+		lost_a_life.setVolume(70);
 
 		SoundBuffer jump_buffer;
 		if (!jump_buffer.loadFromFile("sounds/Jump.ogg"))
@@ -48,15 +79,6 @@ bool gameLoop() {
 		Sound coin;
 		coin.setBuffer(coin_buffer);
 		coin.setVolume(65);
-
-		unsigned int screen_width = 480;
-		unsigned int screen_height = 600;
-
-		RenderWindow window(VideoMode(screen_width, screen_height), "Platformer", Style::Fullscreen);
-		window.setMouseCursorVisible(false);
-
-		/* ----- Add this to set max number of frames per second -----*/
-		//window.setFramerateLimit(60);
 
 		float level_width = scene.getSize().x * scene.getTileSize().x;
 		float level_height = scene.getSize().y * scene.getTileSize().y;
@@ -85,8 +107,6 @@ bool gameLoop() {
 		moving_up_platform_set.loadFromFile("textures/moving_up_platform.png");
 		coin_set.loadFromFile("textures/coin.png");
 
-		Font font;
-		font.loadFromFile("fonts/SuperMario256.ttf");
 
 		Score score(Vector2f(8, 8), Text(String("0"), font), 0);
 
@@ -112,11 +132,11 @@ bool gameLoop() {
 		for (Object scene_object : scene.getAllObjects()) {
 
 			if (scene_object.type == "enemy") {
-				MoveDirection dir;
+				Entity::MoveDirection dir;
 				if (scene_object.getPropertyByName("Direction") == "Right")
-					dir = Right;
+					dir = Entity::MoveDirection::Right;
 				else
-					dir = Left;
+					dir = Entity::MoveDirection::Left;
 				entities.push_front(std::make_unique <Enemy> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 16, 16, dir));
 
 			} 
@@ -126,13 +146,15 @@ bool gameLoop() {
 
 			if (scene_object.type == "moving platform") {
 
-				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 96, 32, Right));
+				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 96, 32,
+					Entity::MoveDirection::Right));
 
 			}
 
 			if (scene_object.type == "moving up platform") {
 
-				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32, Up));
+				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32, 
+					Entity::MoveDirection::Up));
 
 			}
 
@@ -165,11 +187,11 @@ bool gameLoop() {
 			}
 		}
 
-
 		main_theme.play();
 		main_theme.setLoop(true);
 
-		Clock clock;
+		while (clock.getElapsedTime().asSeconds() < 3.f);
+		clock.restart();
 		bool isInvulnerable = false;
 		float invulnerableCheckTime = INFINITY;
 		float globalTime = 0.f;
@@ -180,6 +202,11 @@ bool gameLoop() {
 			globalTime += time;
 			clock.restart();
 			time *= settings.timeCoef;
+
+			if (main_theme.getStatus() != SoundSource::Playing && lost_a_life.getStatus() != SoundSource::Playing) {
+				main_theme.play();
+				lost_a_life.setPlayingOffset(seconds(0.f));
+			}
 			
 			if ((globalTime - invulnerableCheckTime) >= 2.f) {
 				invulnerableCheckTime = INFINITY;
@@ -218,10 +245,6 @@ bool gameLoop() {
 				}
 			
 
-			if (!boo) {
-				time = 0;
-				boo = true;
-			}
 
 			player.update(time);
 
@@ -249,8 +272,14 @@ bool gameLoop() {
 
 			for (entities_it = entities.begin(); entities_it != entities.end();) {
 				(*entities_it)->update(time);
-				if ((*entities_it)->state == Dead)
-					entities_it = entities.erase(entities_it);
+				if ((*entities_it)->state == Entity::EntityState::Dead)
+					if ((*entities_it)->type == "enemy")
+						if (globalTime - (*entities_it)->death_time_ > 0.5f)
+							entities_it = entities.erase(entities_it);
+						else
+							entities_it++;
+					else
+						entities_it = entities.erase(entities_it);
 				else
 					entities_it++;
 			}
@@ -263,13 +292,18 @@ bool gameLoop() {
 						if (player.speed.y > 0) {
 							(*entities_it)->speed.x = 0;
 							player.speed.y *= (-1);
-							(*entities_it)->state = Dead;
+							(*entities_it)->state = Entity::EntityState::Dead;
+							(*entities_it)->death_time_ = globalTime;
 						}
-						else if ((*entities_it)->state != Dead && !isInvulnerable) {
+						else if ((*entities_it)->state != Entity::EntityState::Dead && !isInvulnerable) {
+							if (main_theme.getStatus() == SoundSource::Playing) {
+								main_theme.pause();
+								lost_a_life.play();
+							}
 							if (lives.getCurrentLives() == 1) 
 								return true;
 							else {
-								player.state = Invulnerable;
+								player.state = Entity::EntityState::Invulnerable;
 								invulnerableCheckTime = globalTime;
 								isInvulnerable = true;
 								lives--;
@@ -281,13 +315,13 @@ bool gameLoop() {
 						if (player.speed.y > 0) {
 							player.rect.top = (*entities_it)->rect.top - player.rect.height;
 							player.speed.y = 0;
-							MoveDirection player_dir = player.getDirection();
-							MoveDirection platform_dir = (*entities_it)->getDirection();
+							Entity::MoveDirection player_dir = player.getDirection();
+							Entity::MoveDirection platform_dir = (*entities_it)->getDirection();
 
 							player.rect.left += (player.speed.x / 10 + (*entities_it)->speed.x)*time;
 
 							player.isOnGround = true;
-							player.state = Staying;
+							player.state = Entity::EntityState::Staying;
 						}
 						else if (player.speed.y < 0) {
 							player.rect.top = (*entities_it)->rect.top + 32;
@@ -299,11 +333,11 @@ bool gameLoop() {
 						if (player.speed.y > 0) {
 							player.rect.top = (*entities_it)->rect.top - player.rect.height;
 							player.speed.y = 0;
-							MoveDirection player_dir = player.getDirection();
-							MoveDirection platform_dir = (*entities_it)->getDirection();
+							Entity::MoveDirection player_dir = player.getDirection();
+							Entity::MoveDirection platform_dir = (*entities_it)->getDirection();
 							player.rect.top += (*entities_it)->speed.y*time;
 							player.isOnGround = true;
-							player.state = Staying;
+							player.state = Entity::EntityState::Staying;
 						}
 						else if (player.speed.y < 0) {
 							player.rect.top = (*entities_it)->rect.top + 32;
@@ -312,11 +346,11 @@ bool gameLoop() {
 					}
 					else if ((*entities_it)->type == "coin") {
 						coin.play();
-						(*entities_it)->state = Dead;
+						(*entities_it)->state = Entity::EntityState::Dead;
 						score += 100;
 					}
 					else if ((*entities_it)->type == "ExtraLife") {
-						(*entities_it)->state = Dead;
+						(*entities_it)->state = Entity::EntityState::Dead;
 						lives++;
 					}
 					
@@ -339,7 +373,6 @@ bool gameLoop() {
 
 			game_with_ui_rt.draw(Sprite(game_rt.getTexture()));
 
-			
 			score.draw(game_with_ui_rt);
 			lives.draw(game_with_ui_rt);
 			game_with_ui_rt.display();

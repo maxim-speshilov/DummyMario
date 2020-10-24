@@ -7,9 +7,9 @@ Entity::Entity(Scene& level, Vector2f pos, int width, int height){
 	rect = FloatRect(pos.x, pos.y, width, height);
 }
 
-Entity::~Entity() {}
+Entity::~Entity() { }
 
-MoveDirection Entity::getDirection() {
+Entity::MoveDirection Entity::getDirection() {
 	return this->direction;
 }
 
@@ -363,7 +363,6 @@ void MovingPlatform::mapProcessing()
 			}
 		}
 }
-
 
 
 Coin::Coin(Scene& level, Vector2f position, int width, int height) :
