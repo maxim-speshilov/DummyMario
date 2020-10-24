@@ -18,7 +18,7 @@ Entity::MoveDirection Entity::getDirection() {
 Player::Player(Scene& level, Vector2f pos, int width, int height) :
 	Entity(level, pos, width, height) {
 	state = Staying;
-	type = "player";
+	type = EntityType::Player;
 	isOnGround = true;
 	speed = Vector2f(0, 0);
 }
@@ -148,20 +148,20 @@ void Player::update(float time){
 
 	switch (state){
 	case Staying:
-		editor.setAnimation("Staying");
+		editor.setAnimation(Animation::AnimationType::Staying);
 		break;
 	case Running:
-		editor.setAnimation("Running");
+		editor.setAnimation(Animation::AnimationType::Running);
 		break;
 	case Jumping:
 		if (!isOnGround)
-			editor.setAnimation("Jumping");
+			editor.setAnimation(Animation::AnimationType::Jumping);
 		break;
 	case Rolling:
-		editor.setAnimation("Rolling");
+		editor.setAnimation(Animation::AnimationType::Rolling);
 		break;
 	case Swimming:
-		editor.setAnimation("Swimming");
+		editor.setAnimation(Animation::AnimationType::Swimming);
 		break;
 	}
 
@@ -244,11 +244,11 @@ void Player::setKeySpeed(Vector2f speed) {
 
 Enemy::Enemy(Scene& level, Vector2f position, int width, int height, MoveDirection direction):
 	Entity(level, position, width, height){
-	state = Running;
-	type = "enemy";
+	state = EntityState::Running;
+	type = EntityType::Enemy;
 	this->direction = direction;
 
-	if (direction == Right)
+	if (direction == MoveDirection::Right)
 		speed = Vector2f(0.05, 0);
 	else 
 		speed = Vector2f(-0.05, 0);
@@ -256,7 +256,7 @@ Enemy::Enemy(Scene& level, Vector2f position, int width, int height, MoveDirecti
 
 void Enemy::update(float time){
 	
-	if (state != Dead) {
+	if (state != EntityState::Dead) {
 		mapProcessing();
 		rect.left += speed.x * time;
 	}
@@ -267,11 +267,11 @@ void Enemy::update(float time){
 	}
 
 	switch (state){
-	case Running:
-		editor.setAnimation("Running");
+	case EntityState::Running:
+		editor.setAnimation(Animation::AnimationType::Running);
 		break;
-	case Dead:
-		editor.setAnimation("Dead");
+	case EntityState::Dead:
+		editor.setAnimation(Animation::AnimationType::Dead);
 		break;
 	}
 
@@ -283,14 +283,14 @@ void Enemy::mapProcessing(){
 	for (auto object : levelObjects)
 		if (rect.intersects(object->rect)) {
 			if ((object->type == "Solid") || (object->type == "Enemy border")) {
-				if (direction == Right) {
+				if (direction == MoveDirection::Right) {
 					rect.left = object->rect.left - rect.width;
-						direction = Left;
+						direction = MoveDirection::Left;
 						speed.x *= -1;
 				}
 				else {
 					rect.left = object->rect.left + object->rect.width;
-						direction = Right;
+						direction = MoveDirection::Right;
 						speed.x *= -1;
 				}
 			}
@@ -300,22 +300,22 @@ void Enemy::mapProcessing(){
 MovingPlatform::MovingPlatform(Scene& level, Vector2f position, int width, int height, MoveDirection direction) :
 	Entity(level, position, width, height){
 
-	state = Running;
+	state = EntityState::Running;
 	this->direction = direction;
 
-	if (direction == Right)
+	if (direction == MoveDirection::Right)
 		speed = Vector2f(0.1, 0);
-	if (direction == Left)
+	if (direction == MoveDirection::Left)
 		speed = Vector2f(-0.1, 0);
-	if (direction == Up)
+	if (direction == MoveDirection::Up)
 		speed = Vector2f(0, -0.1);
-	if (direction == Down)
+	if (direction == MoveDirection::Down)
 		speed = Vector2f(0, 0.1);
 	
 	if ((direction == Left) || (direction == Right))
-		type = "moving platform";
+		type = EntityType::MovingPlatform;
 	else
-		type = "moving up platform";
+		type = EntityType::MovingVerticallyPlatform;
 
 	timeToTurn = 0;	
 }
@@ -328,9 +328,9 @@ void MovingPlatform::update(float time){
 
 	mapProcessing();
 	if ((direction == Left) || (direction == Right))
-		editor.setAnimation("Moving");
+		editor.setAnimation(Animation::AnimationType::Running);
 	if ((direction == Up) || (direction == Down))
-		editor.setAnimation("Moving Up");
+		editor.setAnimation(Animation::AnimationType::Climbing);
 
 	editor.shiftAnimation(time);
 }
@@ -340,24 +340,24 @@ void MovingPlatform::mapProcessing()
 	for (auto object : levelObjects)
 		if (rect.intersects(object->rect)) {
 			if (object->type == "Solid" || object->type == "Platform border") {
-				if (direction == Right) {
+				if (direction == MoveDirection::Right) {
 					rect.left = object->rect.left - rect.width;
-					direction = Left;
+					direction = MoveDirection::Left;
 					speed.x *= -1;
 				}
-				else if (direction == Left) {
+				else if (direction == MoveDirection::Left) {
 					rect.left = object->rect.left + object->rect.width;
-					direction = Right;
+					direction = MoveDirection::Right;
 					speed.x *= -1;
 				}
-				else if (direction == Up) {
+				else if (direction == MoveDirection::Up) {
 					rect.top = object->rect.top + object->rect.height;
-					direction = Down;
+					direction = MoveDirection::Down;
 					speed.y *= -1;
 				}
-				else if (direction == Down) {
+				else if (direction == MoveDirection::Down) {
 					rect.top = object->rect.top - rect.height;
-					direction = Up;
+					direction = MoveDirection::Up;
 					speed.y *= -1;
 				}
 			}
@@ -368,24 +368,24 @@ void MovingPlatform::mapProcessing()
 Coin::Coin(Scene& level, Vector2f position, int width, int height) :
 	Entity(level, position, width, height) {
 	speed = Vector2f(0, 0);
-	direction = Nowhere;
-	type = "coin";
+	direction = MoveDirection::Nowhere;
+	type = EntityType::Coin;
 }
 
 
 void Coin::update(float time) {
-	editor.setAnimation("Spinning");
+	editor.setAnimation(Animation::AnimationType::Spinning);
 	editor.shiftAnimation(time);
 }
 
 ExtraLife::ExtraLife(Scene& scene, Vector2f position, int width, int height) :
 	Entity(scene, position, width, height) {
 	speed = Vector2f(0, 0);
-	direction = Nowhere;
-	type = "ExtraLife";
+	direction = MoveDirection::Nowhere;
+	type = EntityType::ExtraLife;
 }
 
 void ExtraLife::update(float time) {
-	editor.setAnimation("Staying");
+	editor.setAnimation(Animation::AnimationType::Staying);
 	editor.shiftAnimation(time);
 }

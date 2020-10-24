@@ -6,7 +6,8 @@
 
 using namespace std;
 
-struct Object{
+class Object{
+public:
 	sf::FloatRect rect;
 	sf::Sprite sprite;
 	string name;
@@ -17,7 +18,8 @@ struct Object{
 	map <string, string> getProperties() const;
 };
 
-struct Layer{
+class Layer{
+public:
 	vector <sf::Sprite> tileset;
 	int opacity;
 };
@@ -30,6 +32,7 @@ private:
 	vector <Layer> layers;
 	vector <Object> objects;
 	sf::Texture tilesetTexture;
+	sf::RenderTexture background_texture_;
 public:
 	Scene();
 	bool loadFromXmlFile (const char*);
@@ -39,8 +42,8 @@ public:
 	sf::Vector2f getTileSize() const;
 	sf::Vector2f getSize() const;
 	int getSpacing() const;
-	void draw(sf::RenderWindow&) const;
 	void draw(sf::RenderTexture&) const;
+	void draw(sf::RenderWindow&) const;
 };
 
 

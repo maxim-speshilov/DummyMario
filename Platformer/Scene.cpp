@@ -44,16 +44,17 @@ vector <Object> Scene::getAllObjects() const{
 	return objects;
 }
 
+void Scene::draw(sf::RenderTexture &rt) const {
+	sf::Sprite background_sprite(background_texture_.getTexture());
+	background_sprite.setOrigin(0.f, background_sprite.getLocalBounds().height);
+	background_sprite.setScale(1.f, -1.f);
+	rt.draw(background_sprite);
+}
+
 void Scene::draw(sf::RenderWindow &window) const{
 	for (Layer layer : layers)
 		for (sf::Sprite tile : layer.tileset)
 			window.draw(tile);
-}
-
-void Scene::draw(sf::RenderTexture &rt) const {
-	for (Layer layer : layers)
-		for (sf::Sprite tile : layer.tileset)
-			rt.draw(tile);
 }
 
 bool Scene::loadFromXmlFile(const char* filename){
@@ -64,7 +65,7 @@ bool Scene::loadFromXmlFile(const char* filename){
 	TiXmlElement *map = levelFile.FirstChildElement("map");
 	size = sf::Vector2f(atoi(map->Attribute("width")), atoi(map->Attribute("height")));
 	tileSize = sf::Vector2f(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
-
+	background_texture_.create(size.x * tileSize.x, size.y * tileSize.y);
 
 	TiXmlElement *tileset = map->FirstChildElement("tileset");
 	firstTileGID = atoi(tileset->Attribute("firstgid"));
@@ -86,7 +87,6 @@ bool Scene::loadFromXmlFile(const char* filename){
 		throw std::logic_error("Texture file not available");
 
 	
-
 	tilesetTexture.loadFromImage(tilesetImage);
 	tilesetTexture.setSmooth(false);
 
@@ -120,6 +120,7 @@ bool Scene::loadFromXmlFile(const char* filename){
 					sprite.setPosition(j*tileSize.x, i*tileSize.y);
 					sprite.setTextureRect(tileRects[tileGID - firstTileGID]);
 					sprite.setColor(sf::Color(255, 255, 255, layer.opacity));
+					background_texture_.draw(sprite);
 					layer.tileset.push_back(sprite);
 					tileElement = tileElement->NextSiblingElement("tile");
 				}
@@ -127,6 +128,7 @@ bool Scene::loadFromXmlFile(const char* filename){
 		layers.push_back(layer);
 		layerElement = layerElement->NextSiblingElement("layer");
 	}
+
 
 	TiXmlElement *objectgroupElement;
 

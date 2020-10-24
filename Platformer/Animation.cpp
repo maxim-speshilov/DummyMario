@@ -33,42 +33,42 @@ void Animation::shift(float elapsedTime){
 		sprite.setTextureRect(reflexFrames[(int)currentFrame]);
 }
 
-void AnimationEditor::addAnimation(String name, Texture &texture, int left, int top, int width, int height, int numberOfFrames, float animationSpeed, int step){
+void AnimationEditor::addAnimation(Animation::AnimationType name, Texture &texture, int left, int top, int width, int height, int numberOfFrames, float animationSpeed, int step){
 	animationMap[name] = Animation(texture, left, top, width, height, numberOfFrames, animationSpeed, step);
-	keyName = name;
+	key_type_ = name;
 }
 
-void AnimationEditor::setAnimation(String name){
-	keyName = name;
+void AnimationEditor::setAnimation(Animation::AnimationType name){
+	key_type_ = name;
 }
 
 void AnimationEditor::playAnimation(){
-	animationMap[keyName].isOn = true;
+	animationMap[key_type_].isOn = true;
 }
 
 void AnimationEditor::pauseAnimation(){
-	animationMap[keyName].isOn = false;
+	animationMap[key_type_].isOn = false;
 }
 
 void AnimationEditor::set_isReflex(bool boo){
-	animationMap[keyName].isReflex = boo;
+	animationMap[key_type_].isReflex = boo;
 }
 
 void AnimationEditor::shiftAnimation(float elapsedTime){
-	animationMap[keyName].shift(elapsedTime);
+	animationMap[key_type_].shift(elapsedTime);
 }
 
 void AnimationEditor::drawAnimation(RenderWindow &window, int x, int y){
-	animationMap[keyName].sprite.setPosition(x, y);
-	window.draw(animationMap[keyName].sprite);
+	animationMap[key_type_].sprite.setPosition(x, y);
+	window.draw(animationMap[key_type_].sprite);
 }
 
 void AnimationEditor::drawAnimation(RenderTexture &rt, int x, int y){
-	animationMap[keyName].sprite.setPosition(x, y);
-	rt.draw(animationMap[keyName].sprite);
+	animationMap[key_type_].sprite.setPosition(x, y);
+	rt.draw(animationMap[key_type_].sprite);
 }
 
-void AnimationEditor::drawAnimationByName(String key_name, RenderTexture &rt, int x, int y) {
+void AnimationEditor::drawAnimationByName(Animation::AnimationType key_name, RenderTexture &rt, int x, int y) {
 	animationMap[key_name].sprite.setPosition(x, y);
 	rt.draw(animationMap[key_name].sprite);
 }

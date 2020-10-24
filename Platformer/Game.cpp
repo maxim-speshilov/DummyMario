@@ -15,7 +15,7 @@ struct GameSettings {
 GameSettings settings;
 
 // TODO(me) : Create right game structure: start menu, settings, level loading with black screen, game over screen. 
-// TODO(me) : Fix invulnerable implementation. It works but seems strange. 
+
 bool gameLoop() {
 
 	float screen_width = 480.f;
@@ -96,10 +96,10 @@ bool gameLoop() {
 		Player player(scene, { scene.getObjectsByType("player").at(0).rect.left, scene.getObjectsByType("player").at(0).rect.top }, 23, 28);
 
 		running_set.loadFromFile("textures/run_set.png"); rolling_set.loadFromFile("textures/rolling_set.png"), jumping_set.loadFromFile("textures/jump_set.png");
-		player.editor.addAnimation("Running", running_set, 0, 0, 23, 28, 8, 0.005, 23);
-		player.editor.addAnimation("Staying", running_set, 0, 0, 23, 28, 1, 0, 0);
-		player.editor.addAnimation("Rolling", rolling_set, 0, 0, 22, 28, 8, 0.02, 22);
-		player.editor.addAnimation("Jumping", jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
+		player.editor.addAnimation(Animation::AnimationType::Running, running_set, 0, 0, 23, 28, 8, 0.005, 23);
+		player.editor.addAnimation(Animation::AnimationType::Staying, running_set, 0, 0, 23, 28, 1, 0, 0);
+		player.editor.addAnimation(Animation::AnimationType::Rolling, rolling_set, 0, 0, 22, 28, 8, 0.02, 22);
+		player.editor.addAnimation(Animation::AnimationType::Jumping, jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
 
 		Texture enemy_set, moving_platform_set, moving_up_platform_set, coin_set;
 		enemy_set.loadFromFile("textures/enemy_set.png");
@@ -114,8 +114,8 @@ bool gameLoop() {
 		Lives lives(Vector2f(screen_width - 34, 10.f), 3, 3);
 		full_heart.loadFromFile("textures/full_heart.png");
 		void_heart.loadFromFile("textures/void_heart.png");
-		lives.editor.addAnimation("full heart", full_heart, 0, 0, 32, 32, 1, 0, 0);
-		lives.editor.addAnimation("void heart", void_heart, 0, 0, 32, 32, 1, 0, 0);
+		lives.editor.addAnimation(Animation::AnimationType::Staying, full_heart, 0, 0, 32, 32, 1, 0, 0);
+		lives.editor.addAnimation(Animation::AnimationType::Dead, void_heart, 0, 0, 32, 32, 1, 0, 0);
 		
 		std::list <std::unique_ptr<UIWidget>> ui_widgets;
 		std::list <std::unique_ptr<UIWidget>>::iterator widgets_it;
@@ -165,25 +165,25 @@ bool gameLoop() {
 	
 		/* ----- Adding animations ----- */
 		for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
-			if ((*entities_it)->type == "enemy") {
-				(*entities_it)->editor.addAnimation("Running", enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
-				(*entities_it)->editor.addAnimation("Dead", enemy_set, 34, 33, 16, 8, 1, 0, 0);
+			if ((*entities_it)->type == Entity::EntityType::Enemy) {
+				(*entities_it)->editor.addAnimation(Animation::AnimationType::Running, enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
+				(*entities_it)->editor.addAnimation(Animation::AnimationType::Dead, enemy_set, 34, 33, 16, 8, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type == "moving platform") {
-				(*entities_it)->editor.addAnimation("Moving", moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
+			if ((*entities_it)->type == Entity::EntityType::MovingPlatform) {
+				(*entities_it)->editor.addAnimation(Animation::AnimationType::Running, moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type == "moving up platform") {
-				(*entities_it)->editor.addAnimation("Moving Up", moving_up_platform_set, 0, 0, 32, 32, 1, 0, 0);
+			if ((*entities_it)->type == Entity::EntityType::MovingVerticallyPlatform) {
+				(*entities_it)->editor.addAnimation(Animation::AnimationType::Climbing, moving_up_platform_set, 0, 0, 32, 32, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type == "coin") {
-				(*entities_it)->editor.addAnimation("Spinning", coin_set, 0, 0, 32, 32, 4, 0.008, 32);
+			if ((*entities_it)->type == Entity::EntityType::Coin) {
+				(*entities_it)->editor.addAnimation(Animation::AnimationType::Spinning, coin_set, 0, 0, 32, 32, 4, 0.008, 32);
 			}
 
-			if ((*entities_it)->type == "ExtraLife") {
-				(*entities_it)->editor.addAnimation("Staying", full_heart, 0, 0, 32, 32, 1, 0, 0);
+			if ((*entities_it)->type == Entity::EntityType::ExtraLife) {
+				(*entities_it)->editor.addAnimation(Animation::AnimationType::Staying, full_heart, 0, 0, 32, 32, 1, 0, 0);
 			}
 		}
 
@@ -273,7 +273,7 @@ bool gameLoop() {
 			for (entities_it = entities.begin(); entities_it != entities.end();) {
 				(*entities_it)->update(time);
 				if ((*entities_it)->state == Entity::EntityState::Dead)
-					if ((*entities_it)->type == "enemy")
+					if ((*entities_it)->type == Entity::EntityType::Enemy)
 						if (globalTime - (*entities_it)->death_time_ > 0.5f)
 							entities_it = entities.erase(entities_it);
 						else
@@ -288,7 +288,7 @@ bool gameLoop() {
 
 			for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
 				if (player.rect.intersects((*entities_it)->rect)) {
-					if ((*entities_it)->type == "enemy") {
+					if ((*entities_it)->type == Entity::EntityType::Enemy) {
 						if (player.speed.y > 0) {
 							(*entities_it)->speed.x = 0;
 							player.speed.y *= (-1);
@@ -311,7 +311,7 @@ bool gameLoop() {
 						}
 							
 					}
-					else if ((*entities_it)->type == "moving platform") {
+					else if ((*entities_it)->type == Entity::EntityType::MovingPlatform) {
 						if (player.speed.y > 0) {
 							player.rect.top = (*entities_it)->rect.top - player.rect.height;
 							player.speed.y = 0;
@@ -329,7 +329,7 @@ bool gameLoop() {
 						}
 					}
 
-					else if ((*entities_it)->type == "moving up platform") {
+					else if ((*entities_it)->type == Entity::EntityType::MovingVerticallyPlatform) {
 						if (player.speed.y > 0) {
 							player.rect.top = (*entities_it)->rect.top - player.rect.height;
 							player.speed.y = 0;
@@ -344,12 +344,12 @@ bool gameLoop() {
 							player.speed.y = 0;
 						}
 					}
-					else if ((*entities_it)->type == "coin") {
+					else if ((*entities_it)->type == Entity::EntityType::Coin) {
 						coin.play();
 						(*entities_it)->state = Entity::EntityState::Dead;
 						score += 100;
 					}
-					else if ((*entities_it)->type == "ExtraLife") {
+					else if ((*entities_it)->type == Entity::EntityType::ExtraLife) {
 						(*entities_it)->state = Entity::EntityState::Dead;
 						lives++;
 					}

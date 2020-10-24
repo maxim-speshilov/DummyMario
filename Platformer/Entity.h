@@ -35,6 +35,16 @@ public:
 		Dead, 
 		Invulnerable
 	};
+	enum EntityType
+	{
+		Player,
+		Enemy,
+		MovingPlatform,
+		MovingVerticallyPlatform,
+		Coin,
+		ExtraLife
+	};
+
 	Entity(Scene&, Vector2f, int, int);
 	~Entity();
 	MoveDirection getDirection();
@@ -49,7 +59,7 @@ protected:
 	EntityState state;
 	AnimationEditor editor;
 	vector <std::shared_ptr<Object>> levelObjects;
-	string type;
+	EntityType type;
 	float death_time_ = INFINITY;
 
 };

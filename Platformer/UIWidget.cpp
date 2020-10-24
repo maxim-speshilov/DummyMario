@@ -77,12 +77,12 @@ Lives & Lives::operator--()
 
 void Lives::draw(RenderWindow& window) {
 	for (int i = 0; i < numberOfLives - currentNumberOfLives; i++) {
-		editor.setAnimation("void heart");
+		editor.setAnimation(Animation::AnimationType::Dead);
 		editor.drawAnimation(window, pos.x - 34 * i, pos.y);
 	}
 
 	for (int i = numberOfLives - currentNumberOfLives; i < numberOfLives; i++) {
-		editor.setAnimation("full heart");
+		editor.setAnimation(Animation::AnimationType::Staying);
 		editor.drawAnimation(window, pos.x - 34 * i, pos.y);
 	}
 }
@@ -90,12 +90,12 @@ void Lives::draw(RenderWindow& window) {
 
 void Lives::draw(RenderTexture& rt) {
 	for (int i = 0; i < numberOfLives - currentNumberOfLives; i++) {
-		editor.setAnimation("void heart");
+		editor.setAnimation(Animation::AnimationType::Dead);
 		editor.drawAnimation(rt, pos.x - 34 * i, pos.y);
 	}
 
 	for (int i = numberOfLives - currentNumberOfLives; i < numberOfLives; i++) {
-		editor.setAnimation("full heart");
+		editor.setAnimation(Animation::AnimationType::Staying);
 		editor.drawAnimation(rt, pos.x - 34 * i, pos.y);
 	}
 }
