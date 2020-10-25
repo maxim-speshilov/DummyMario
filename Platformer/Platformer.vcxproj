@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="tinystr.h" />
     <ClInclude Include="tinyxml.h" />

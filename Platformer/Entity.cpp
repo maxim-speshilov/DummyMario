@@ -1,135 +1,137 @@
 #include "Entity.h"
 
+using namespace entity;
+
 Entity::Entity(Scene& level, Vector2f pos, int width, int height){
-	std::vector <Object> levelObjects = level.getAllObjects();
-	for (Object object : levelObjects)
-		this->levelObjects.push_back(std::make_shared<Object>(object));	
-	rect = FloatRect(pos.x, pos.y, width, height);
+	std::vector <Object> level_objects_ = level.getAllObjects();
+	for (Object object : level_objects_)
+		this->level_objects_.push_back(std::make_shared<Object>(object));	
+	rect_ = FloatRect(pos.x, pos.y, width, height);
 }
 
 Entity::~Entity() { }
 
-Entity::MoveDirection Entity::getDirection() {
-	return this->direction;
+MoveDirection Entity::getDirection() {
+	return this->direction_;
 }
 
 // TODO(me): Sliding processing while being on slope  
 
 Player::Player(Scene& level, Vector2f pos, int width, int height) :
 	Entity(level, pos, width, height) {
-	state = Staying;
-	type = EntityType::Player;
-	isOnGround = true;
-	speed = Vector2f(0, 0);
+	state_ = kStaying;
+	type_ = Type::kPlayer;
+	is_on_ground_ = true;
+	speed_ = Vector2f(0, 0);
 }
 
-void Player::mapProcessing(int direction){
+void Player::mapProcessing(int direction_){
 
-	for (auto object : levelObjects){
-		if (rect.intersects(object->rect)){
-			if (object->type == "Solid"){
-				if (direction == 1){
-					if (speed.y > 0){
-						rect.top = object->rect.top - rect.height;
-						speed.y = 0;
-						isOnGround = true;
-						state = Staying;
+	for (auto object : level_objects_){
+		if (rect_.intersects(object->rect_)){
+			if (object->type_ == "Solid"){
+				if (direction_ == 1){
+					if (speed_.y > 0){
+						rect_.top = object->rect_.top - rect_.height;
+						speed_.y = 0;
+						is_on_ground_ = true;
+						state_ = kStaying;
 					}
 
-					if (speed.y < 0) {
-						rect.top = object->rect.top + object->rect.height;
-						speed.y = 0;
-					}
-				}
-
-				if (direction == 0){
-					if (speed.x > 0)
-						rect.left = object->rect.left - rect.width;
-
-					if (speed.x < 0)
-						rect.left = object->rect.left + object->rect.width;
-				}
-			}
-
-			if (object->type == "JumpBooster"){
-				if (direction == 1){
-					if (speed.y > 0){
-						speed.y = -0.8;
-					}
-					else if (speed.y < 0) {
-						rect.top = object->rect.top + object->rect.height;
-						speed.y = 0;
+					if (speed_.y < 0) {
+						rect_.top = object->rect_.top + object->rect_.height;
+						speed_.y = 0;
 					}
 				}
 
-				if (direction == 0){
-					if (rect.left < object->rect.left - rect.width)
-						rect.left = object->rect.left - rect.width;
+				if (direction_ == 0){
+					if (speed_.x > 0)
+						rect_.left = object->rect_.left - rect_.width;
 
-					if (rect.left > object->rect.left + object->rect.width)
-						rect.left = object->rect.left + object->rect.width;
+					if (speed_.x < 0)
+						rect_.left = object->rect_.left + object->rect_.width;
 				}
 			}
 
-			if (object->type == "JumpSuperBooster"){
-				if (direction == 1){
-					if (speed.y > 0){
-						speed.y = -1.;
+			if (object->type_ == "JumpBooster"){
+				if (direction_ == 1){
+					if (speed_.y > 0){
+						speed_.y = -0.8;
 					}
-
-					else if (speed.y < 0) {
-						rect.top = object->rect.top + object->rect.height;
-						speed.y = 0;
+					else if (speed_.y < 0) {
+						rect_.top = object->rect_.top + object->rect_.height;
+						speed_.y = 0;
 					}
 				}
 
-				if (direction == 0){
-					if (rect.left < object->rect.left - rect.width)
-						rect.left = object->rect.left - rect.width;
+				if (direction_ == 0){
+					if (rect_.left < object->rect_.left - rect_.width)
+						rect_.left = object->rect_.left - rect_.width;
 
-					if (rect.left > object->rect.left + object->rect.width)
-						rect.left = object->rect.left + object->rect.width;
+					if (rect_.left > object->rect_.left + object->rect_.width)
+						rect_.left = object->rect_.left + object->rect_.width;
 				}
 			}
 
-			if (object->type == "LeftPipe"){
-				if (direction == 1){
-					if (speed.y > 0){
-						rect.top = object->rect.top - rect.height;
-						speed.y = 0;
-						isOnGround = true;
-						state = Staying;
+			if (object->type_ == "JumpSuperBooster"){
+				if (direction_ == 1){
+					if (speed_.y > 0){
+						speed_.y = -1.;
 					}
 
-					if (speed.y < 0) {
-						rect.top = object->rect.top + object->rect.height;
-						speed.y = 0;
+					else if (speed_.y < 0) {
+						rect_.top = object->rect_.top + object->rect_.height;
+						speed_.y = 0;
 					}
 				}
 
-				if (direction == 0){
+				if (direction_ == 0){
+					if (rect_.left < object->rect_.left - rect_.width)
+						rect_.left = object->rect_.left - rect_.width;
+
+					if (rect_.left > object->rect_.left + object->rect_.width)
+						rect_.left = object->rect_.left + object->rect_.width;
+				}
+			}
+
+			if (object->type_ == "LeftPipe"){
+				if (direction_ == 1){
+					if (speed_.y > 0){
+						rect_.top = object->rect_.top - rect_.height;
+						speed_.y = 0;
+						is_on_ground_ = true;
+						state_ = kStaying;
+					}
+
+					if (speed_.y < 0) {
+						rect_.top = object->rect_.top + object->rect_.height;
+						speed_.y = 0;
+					}
+				}
+
+				if (direction_ == 0){
 					Time t = milliseconds(100);
 
 					sleep(t);
 
-					if (speed.x > 0)
-						rect.left = object->rect.left + object->rect.width;
+					if (speed_.x > 0)
+						rect_.left = object->rect_.left + object->rect_.width;
 
-					if (speed.x < 0)
-						rect.left = object->rect.left - object->rect.width;
+					if (speed_.x < 0)
+						rect_.left = object->rect_.left - object->rect_.width;
 				}
 			}
 
-			if (object->type == "SlopeRight") {
-				if (direction == 1) {
-					if (speed.y > 0) {
-						rect.top = object->rect.top - rect.height;
-						speed.y *= 0.4472;
-						isOnGround = true;
-						state = Sliding;
+			if (object->type_ == "SlopeRight") {
+				if (direction_ == 1) {
+					if (speed_.y > 0) {
+						rect_.top = object->rect_.top - rect_.height;
+						speed_.y *= 0.4472;
+						is_on_ground_ = true;
+						state_ = kSliding;
 					}
 
-					if (speed.y < 0) {
+					if (speed_.y < 0) {
 						;
 					}
 				}
@@ -140,225 +142,225 @@ void Player::mapProcessing(int direction){
 
 void Player::update(float time){
 
-	if (speed.y != 0) {
-		state = Jumping;
+	if (speed_.y != 0) {
+		state_ = kJumping;
 	}
 
 	keyboardProcessing();
 
-	switch (state){
-	case Staying:
-		editor.setAnimation(Animation::AnimationType::Staying);
+	switch (state_){
+	case kStaying:
+		editor_.setAnimation(animation::kStaying);
 		break;
-	case Running:
-		editor.setAnimation(Animation::AnimationType::Running);
+	case kRunning:
+		editor_.setAnimation(animation::kRunning);
 		break;
-	case Jumping:
-		if (!isOnGround)
-			editor.setAnimation(Animation::AnimationType::Jumping);
+	case kJumping:
+		if (!is_on_ground_)
+			editor_.setAnimation(animation::kJumping);
 		break;
-	case Rolling:
-		editor.setAnimation(Animation::AnimationType::Rolling);
+	case kRolling:
+		editor_.setAnimation(animation::kRolling);
 		break;
-	case Swimming:
-		editor.setAnimation(Animation::AnimationType::Swimming);
+	case kSwimming:
+		editor_.setAnimation(animation::kSwimming);
 		break;
 	}
 
-	if (direction == Left)
-		editor.set_isReflex(true);
-	if (direction == Right)
-		editor.set_isReflex(false);
+	if (direction_ == kLeft)
+		editor_.setReflex(true);
+	if (direction_ == kRight)
+		editor_.setReflex(false);
 
-	speed.y += 0.002*time;
+	speed_.y += 0.002*time;
 
-	rect.left += speed.x * time;
+	rect_.left += speed_.x * time;
 
 	mapProcessing(0);
 
-	rect.top += speed.y*time;
+	rect_.top += speed_.y*time;
 
 	mapProcessing(1);
 
-	editor.shiftAnimation(time);
+	editor_.shiftAnimation(time);
 
-	isKeyPressed["Left"] = isKeyPressed["Right"] = isKeyPressed["Up"] = isKeyPressed["Down"] = false;
+	is_key_pressed_["Left"] = is_key_pressed_["Right"] = is_key_pressed_["Up"] = is_key_pressed_["Down"] = false;
 
 }
 
 void Player::keyboardProcessing(){
-	if (isKeyPressed["Left"]){
-		if (state == Staying)
-			state = Running;
-		direction = Left;
-		this->speed.x = -key_speed.x;
+	if (is_key_pressed_["Left"]){
+		if (state_ == kStaying)
+			state_ = kRunning;
+		direction_ = kLeft;
+		this->speed_.x = -key_speed_.x;
 	}
 
-	if (isKeyPressed["Right"]){
-		if (state == Staying)
-			state = Running;
-		direction = Right;
-		this->speed.x = key_speed.x;
+	if (is_key_pressed_["Right"]){
+		if (state_ == kStaying)
+			state_ = kRunning;
+		direction_ = kRight;
+		this->speed_.x = key_speed_.x;
 	}
 
-	if (isKeyPressed["Up"]){
-		if (state == Swimming)
-			speed.y = -key_speed.y / 10;
-		else if (state != Jumping){
-			state = Jumping;
-			isOnGround = false;
-			speed.y = -key_speed.y;
+	if (is_key_pressed_["Up"]){
+		if (state_ == kSwimming)
+			speed_.y = -key_speed_.y / 10;
+		else if (state_ != kJumping){
+			state_ = kJumping;
+			is_on_ground_ = false;
+			speed_.y = -key_speed_.y;
 		}
 	}
 
-	if (isKeyPressed["Down"]){
-		if (state == Swimming)
-			speed.y = key_speed.y / 10;
-		else if (state == Running){
-			state = Rolling;
+	if (is_key_pressed_["Down"]){
+		if (state_ == kSwimming)
+			speed_.y = key_speed_.y / 10;
+		else if (state_ == kRunning){
+			state_ = kRolling;
 		}
 	}
 
-	if (!(isKeyPressed["Left"] || isKeyPressed["Right"])){
-		if (state == Running)
-			state = Staying;
-		speed.x = 0;
+	if (!(is_key_pressed_["Left"] || is_key_pressed_["Right"])){
+		if (state_ == kRunning)
+			state_ = kStaying;
+		speed_.x = 0;
 	}
 
-	if (!isKeyPressed["Down"]){
-		if (state == Rolling)
-			state = Running;
+	if (!is_key_pressed_["Down"]){
+		if (state_ == kRolling)
+			state_ = kRunning;
 	}
 
-	if (!(isKeyPressed["Up"] || isKeyPressed["Down"])){
-		if (state == Swimming)
-			speed.y = 0;
+	if (!(is_key_pressed_["Up"] || is_key_pressed_["Down"])){
+		if (state_ == kSwimming)
+			speed_.y = 0;
 	}
 
 
 }
 
-void Player::setKeySpeed(Vector2f speed) {
-	key_speed = speed;
+void Player::setKeySpeed(Vector2f speed_) {
+	key_speed_ = speed_;
 }
 
-Enemy::Enemy(Scene& level, Vector2f position, int width, int height, MoveDirection direction):
+Enemy::Enemy(Scene& level, Vector2f position, int width, int height, MoveDirection direction_):
 	Entity(level, position, width, height){
-	state = EntityState::Running;
-	type = EntityType::Enemy;
-	this->direction = direction;
+	state_ = State::kRunning;
+	type_ = Type::kEnemy;
+	this->direction_ = direction_;
 
-	if (direction == MoveDirection::Right)
-		speed = Vector2f(0.05, 0);
+	if (direction_ == MoveDirection::kRight)
+		speed_ = Vector2f(0.05, 0);
 	else 
-		speed = Vector2f(-0.05, 0);
+		speed_ = Vector2f(-0.05, 0);
 }
 
 void Enemy::update(float time){
 	
-	if (state != EntityState::Dead) {
+	if (state_ != State::kDead) {
 		mapProcessing();
-		rect.left += speed.x * time;
+		rect_.left += speed_.x * time;
 	}
 
-	else if (!isSizeChanged){
-		rect.top += 8;
-		isSizeChanged = true;
+	else if (!is_size_changed_){
+		rect_.top += 8;
+		is_size_changed_ = true;
 	}
 
-	switch (state){
-	case EntityState::Running:
-		editor.setAnimation(Animation::AnimationType::Running);
+	switch (state_){
+	case State::kRunning:
+		editor_.setAnimation(animation::kRunning);
 		break;
-	case EntityState::Dead:
-		editor.setAnimation(Animation::AnimationType::Dead);
+	case State::kDead:
+		editor_.setAnimation(animation::kDead);
 		break;
 	}
 
-	editor.shiftAnimation(time);
+	editor_.shiftAnimation(time);
 }
 
 void Enemy::mapProcessing(){
 
-	for (auto object : levelObjects)
-		if (rect.intersects(object->rect)) {
-			if ((object->type == "Solid") || (object->type == "Enemy border")) {
-				if (direction == MoveDirection::Right) {
-					rect.left = object->rect.left - rect.width;
-						direction = MoveDirection::Left;
-						speed.x *= -1;
+	for (auto object : level_objects_)
+		if (rect_.intersects(object->rect_)) {
+			if ((object->type_ == "Solid") || (object->type_ == "EnemyBorder")) {
+				if (direction_ == MoveDirection::kRight) {
+					rect_.left = object->rect_.left - rect_.width;
+						direction_ = MoveDirection::kLeft;
+						speed_.x *= -1;
 				}
 				else {
-					rect.left = object->rect.left + object->rect.width;
-						direction = MoveDirection::Right;
-						speed.x *= -1;
+					rect_.left = object->rect_.left + object->rect_.width;
+						direction_ = MoveDirection::kRight;
+						speed_.x *= -1;
 				}
 			}
 		}
 }
 
-MovingPlatform::MovingPlatform(Scene& level, Vector2f position, int width, int height, MoveDirection direction) :
+MovingPlatform::MovingPlatform(Scene& level, Vector2f position, int width, int height, MoveDirection direction_) :
 	Entity(level, position, width, height){
 
-	state = EntityState::Running;
-	this->direction = direction;
+	state_ = State::kRunning;
+	this->direction_ = direction_;
 
-	if (direction == MoveDirection::Right)
-		speed = Vector2f(0.1, 0);
-	if (direction == MoveDirection::Left)
-		speed = Vector2f(-0.1, 0);
-	if (direction == MoveDirection::Up)
-		speed = Vector2f(0, -0.1);
-	if (direction == MoveDirection::Down)
-		speed = Vector2f(0, 0.1);
+	if (direction_ == MoveDirection::kRight)
+		speed_ = Vector2f(0.1, 0);
+	if (direction_ == MoveDirection::kLeft)
+		speed_ = Vector2f(-0.1, 0);
+	if (direction_ == MoveDirection::kUp)
+		speed_ = Vector2f(0, -0.1);
+	if (direction_ == MoveDirection::kDown)
+		speed_ = Vector2f(0, 0.1);
 	
-	if ((direction == Left) || (direction == Right))
-		type = EntityType::MovingPlatform;
+	if ((direction_ == kLeft) || (direction_ == kRight))
+		type_ = Type::kMovingPlatform;
 	else
-		type = EntityType::MovingVerticallyPlatform;
+		type_ = Type::kMovingVerticallyPlatform;
 
-	timeToTurn = 0;	
+	time_to_turn_ = 0;	
 }
 
 void MovingPlatform::update(float time){
-	if ((direction == Left) || (direction == Right))
-		rect.left += speed.x * time;
-	if ((direction == Up) || (direction == Down))
-		rect.top += speed.y * time;
+	if ((direction_ == kLeft) || (direction_ == kRight))
+		rect_.left += speed_.x * time;
+	if ((direction_ == kUp) || (direction_ == kDown))
+		rect_.top += speed_.y * time;
 
 	mapProcessing();
-	if ((direction == Left) || (direction == Right))
-		editor.setAnimation(Animation::AnimationType::Running);
-	if ((direction == Up) || (direction == Down))
-		editor.setAnimation(Animation::AnimationType::Climbing);
+	if ((direction_ == kLeft) || (direction_ == kRight))
+		editor_.setAnimation(animation::kRunning);
+	if ((direction_ == kUp) || (direction_ == kDown))
+		editor_.setAnimation(animation::kClimbing);
 
-	editor.shiftAnimation(time);
+	editor_.shiftAnimation(time);
 }
 
 void MovingPlatform::mapProcessing()
 {
-	for (auto object : levelObjects)
-		if (rect.intersects(object->rect)) {
-			if (object->type == "Solid" || object->type == "Platform border") {
-				if (direction == MoveDirection::Right) {
-					rect.left = object->rect.left - rect.width;
-					direction = MoveDirection::Left;
-					speed.x *= -1;
+	for (auto object : level_objects_)
+		if (rect_.intersects(object->rect_)) {
+			if (object->type_ == "Solid" || object->type_ == "PlatformBorder") {
+				if (direction_ == MoveDirection::kRight) {
+					rect_.left = object->rect_.left - rect_.width;
+					direction_ = MoveDirection::kLeft;
+					speed_.x *= -1;
 				}
-				else if (direction == MoveDirection::Left) {
-					rect.left = object->rect.left + object->rect.width;
-					direction = MoveDirection::Right;
-					speed.x *= -1;
+				else if (direction_ == MoveDirection::kLeft) {
+					rect_.left = object->rect_.left + object->rect_.width;
+					direction_ = MoveDirection::kRight;
+					speed_.x *= -1;
 				}
-				else if (direction == MoveDirection::Up) {
-					rect.top = object->rect.top + object->rect.height;
-					direction = MoveDirection::Down;
-					speed.y *= -1;
+				else if (direction_ == MoveDirection::kUp) {
+					rect_.top = object->rect_.top + object->rect_.height;
+					direction_ = MoveDirection::kDown;
+					speed_.y *= -1;
 				}
-				else if (direction == MoveDirection::Down) {
-					rect.top = object->rect.top - rect.height;
-					direction = MoveDirection::Up;
-					speed.y *= -1;
+				else if (direction_ == MoveDirection::kDown) {
+					rect_.top = object->rect_.top - rect_.height;
+					direction_ = MoveDirection::kUp;
+					speed_.y *= -1;
 				}
 			}
 		}
@@ -367,25 +369,25 @@ void MovingPlatform::mapProcessing()
 
 Coin::Coin(Scene& level, Vector2f position, int width, int height) :
 	Entity(level, position, width, height) {
-	speed = Vector2f(0, 0);
-	direction = MoveDirection::Nowhere;
-	type = EntityType::Coin;
+	speed_ = Vector2f(0, 0);
+	direction_ = MoveDirection::kNowhere;
+	type_ = Type::kCoin;
 }
 
 
 void Coin::update(float time) {
-	editor.setAnimation(Animation::AnimationType::Spinning);
-	editor.shiftAnimation(time);
+	editor_.setAnimation(animation::kSpinning);
+	editor_.shiftAnimation(time);
 }
 
 ExtraLife::ExtraLife(Scene& scene, Vector2f position, int width, int height) :
 	Entity(scene, position, width, height) {
-	speed = Vector2f(0, 0);
-	direction = MoveDirection::Nowhere;
-	type = EntityType::ExtraLife;
+	speed_ = Vector2f(0, 0);
+	direction_ = MoveDirection::kNowhere;
+	type_ = Type::kExtraLife;
 }
 
 void ExtraLife::update(float time) {
-	editor.setAnimation(Animation::AnimationType::Staying);
-	editor.shiftAnimation(time);
+	editor_.setAnimation(animation::kStaying);
+	editor_.shiftAnimation(time);
 }

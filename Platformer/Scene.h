@@ -8,10 +8,10 @@ using namespace std;
 
 class Object{
 public:
-	sf::FloatRect rect;
+	sf::FloatRect rect_;
 	sf::Sprite sprite;
 	string name;
-	string type;
+	string type_;
 	map <string, string> properties;
 
 	string getPropertyByName(string) const;

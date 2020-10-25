@@ -1,74 +1,79 @@
 #include "Animation.h"
 
+using namespace animation;
 
-Animation::Animation(){
+Animation::Animation() {}
+
+Animation::~Animation() {
+	frames_.clear();
+	reflex_frames_.clear();
 }
 
-Animation::Animation(Texture &texture, int left, int top, int width, int height, int numberOfFrames, float animationSpeed, int step){
-	currentFrame = 0;
-	this->animationSpeed = animationSpeed;
+Animation::Animation(Texture &texture, int left, int top, int width, int height, int number_of_frames, float animation_speed, int step) {
+	current_frame_ = 0;
+	animation_speed_ = animation_speed;
 
-	isReflex = false;
-	isOn = true;
+	is_reflex_ = false;
+	is_on_ = true;
 
-	sprite.setTexture(texture);
+	sprite_.setTexture(texture);
 
-	for (int i = 0; i < numberOfFrames; i++){
-		frames.push_back(IntRect(left + i*step, top, width, height));
-		reflexFrames.push_back(IntRect(left + i*step + width, top, -width, height));
+	for (int i = 0; i < number_of_frames; i++) {
+		frames_.push_back(IntRect(left + i*step, top, width, height));
+		reflex_frames_.push_back(IntRect(left + i*step + width, top, -width, height));
 	}
 }
 
-void Animation::shift(float elapsedTime){
-	if (!isOn)
+void Animation::shift(float elapsed_time) {
+	if (!is_on_)
 		return;
 
-	currentFrame += animationSpeed * elapsedTime;
+	current_frame_ += animation_speed_ * elapsed_time;
 
-	if (currentFrame > frames.size())
-		currentFrame -= (float)frames.size();
-	if (!isReflex)
-		sprite.setTextureRect(frames[(int)currentFrame]);
+	if (current_frame_ > frames_.size())
+		current_frame_ -= (float)frames_.size();
+	if (!is_reflex_)
+		sprite_.setTextureRect(frames_[(int)current_frame_]);
 	else
-		sprite.setTextureRect(reflexFrames[(int)currentFrame]);
+		sprite_.setTextureRect(reflex_frames_[(int)current_frame_]);
 }
 
-void AnimationEditor::addAnimation(Animation::AnimationType name, Texture &texture, int left, int top, int width, int height, int numberOfFrames, float animationSpeed, int step){
-	animationMap[name] = Animation(texture, left, top, width, height, numberOfFrames, animationSpeed, step);
-	key_type_ = name;
+void AnimationEditor::addAnimation(ID id, Texture &texture, int left, int top, int width, int height, int number_of_frames, float animation_speed, int step) {
+	animation_map_[id] = Animation(texture, left, top, width, height, number_of_frames, animation_speed, step);
+	key_id_ = id;
 }
 
-void AnimationEditor::setAnimation(Animation::AnimationType name){
-	key_type_ = name;
+void AnimationEditor::setAnimation(ID id) {
+	key_id_ = id;
 }
 
-void AnimationEditor::playAnimation(){
-	animationMap[key_type_].isOn = true;
+void AnimationEditor::playAnimation() {
+	animation_map_[key_id_].is_on_ = true;
 }
 
-void AnimationEditor::pauseAnimation(){
-	animationMap[key_type_].isOn = false;
+void AnimationEditor::pauseAnimation() {
+	animation_map_[key_id_].is_on_ = false;
 }
 
-void AnimationEditor::set_isReflex(bool boo){
-	animationMap[key_type_].isReflex = boo;
+void AnimationEditor::setReflex(bool boo){
+	animation_map_[key_id_].is_reflex_ = boo;
 }
 
 void AnimationEditor::shiftAnimation(float elapsedTime){
-	animationMap[key_type_].shift(elapsedTime);
+	animation_map_[key_id_].shift(elapsedTime);
 }
 
 void AnimationEditor::drawAnimation(RenderWindow &window, int x, int y){
-	animationMap[key_type_].sprite.setPosition(x, y);
-	window.draw(animationMap[key_type_].sprite);
+	animation_map_[key_id_].sprite_.setPosition(x, y);
+	window.draw(animation_map_[key_id_].sprite_);
 }
 
 void AnimationEditor::drawAnimation(RenderTexture &rt, int x, int y){
-	animationMap[key_type_].sprite.setPosition(x, y);
-	rt.draw(animationMap[key_type_].sprite);
+	animation_map_[key_id_].sprite_.setPosition(x, y);
+	rt.draw(animation_map_[key_id_].sprite_);
 }
 
-void AnimationEditor::drawAnimationByName(Animation::AnimationType key_name, RenderTexture &rt, int x, int y) {
-	animationMap[key_name].sprite.setPosition(x, y);
-	rt.draw(animationMap[key_name].sprite);
+void AnimationEditor::drawAnimationByID(ID key_id, RenderTexture &rt, int x, int y) {
+	animation_map_[key_id].sprite_.setPosition(x, y);
+	rt.draw(animation_map_[key_id].sprite_);
 }

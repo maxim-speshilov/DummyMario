@@ -28,7 +28,7 @@ vector <Object> Scene::getObjectsByType(string type) const{
 	vector <Object> result;
 
 	for (Object object : objects)
-		if (object.type == type)
+		if (object.type_ == type)
 			result.push_back(object);
 
 	return result;
@@ -36,7 +36,7 @@ vector <Object> Scene::getObjectsByType(string type) const{
 
 Object Scene::getFirstObject(string type) const {
 	for (Object object : objects)
-		if (object.type == type)
+		if (object.type_ == type)
 			return object;
 }
 
@@ -142,18 +142,18 @@ bool Scene::loadFromXmlFile(const char* filename){
 			while (objectElement){
 				Object object;
 
-				object.rect = sf::FloatRect(strtod(objectElement->Attribute("x"), nullptr), strtod(objectElement->Attribute("y"), nullptr), 0, 0);
+				object.rect_ = sf::FloatRect(strtod(objectElement->Attribute("x"), nullptr), strtod(objectElement->Attribute("y"), nullptr), 0, 0);
 				object.sprite = sf::Sprite(tilesetTexture, sf::IntRect(0, 0, 0, 0));
-				object.sprite.setPosition(object.rect.left, object.rect.top);
+				object.sprite.setPosition(object.rect_.left, object.rect_.top);
 
 				if (objectElement->Attribute("name") != NULL)
 					object.name = objectElement->Attribute("name");
 				if (objectElement->Attribute("type") != NULL)
-					object.type = objectElement->Attribute("type");
+					object.type_ = objectElement->Attribute("type");
 				if (objectElement->Attribute("width") != NULL)
-					object.rect.width = strtod(objectElement->Attribute("width"), nullptr);
+					object.rect_.width = strtod(objectElement->Attribute("width"), nullptr);
 				if (objectElement->Attribute("height") != NULL)
-					object.rect.height = strtod(objectElement->Attribute("height"), nullptr);
+					object.rect_.height = strtod(objectElement->Attribute("height"), nullptr);
 
 				if (objectElement->FirstChildElement("properties")){
 					TiXmlElement *propertiesElement = objectElement->FirstChildElement("properties");

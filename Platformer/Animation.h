@@ -3,49 +3,53 @@
 #include <SFML\Graphics.hpp>
 using namespace sf;
 
-class Animation{
-public:
-	enum AnimationType 
+namespace animation {
+	enum ID
 	{
-		Staying,
-		Running,
-		Jumping,
-		Flying,
-		Spinning,
-		Rolling,
-		Swimming,
-		Climbing,
-		Sliding,
-		Dead,
-		Invulnerable
+		kStaying,
+		kRunning,
+		kJumping,
+		kFlying,
+		kSpinning,
+		kRolling,
+		kSwimming,
+		kClimbing,
+		kSliding,
+		kDead,
+		kInvulnerable
 	};
 
-	std::vector <IntRect> frames, reflexFrames;
-	float currentFrame;
-	float animationSpeed;
-	bool isReflex = true, isOn = true;
-	Sprite sprite;
+	class Animation {
+	public:
+		Animation();
+		Animation(Texture &texture, int left, int top, int width, int height, int numberOfFrames, float animationSpeed, int step);
+		~Animation();
 
-	Animation();
-	Animation(Texture &texture, int left, int top, int width, int height, int numberOfFrames, float animationSpeed, int step);
+		std::vector <IntRect> frames_;
+		std::vector <IntRect> reflex_frames_;
+		float current_frame_;
+		float animation_speed_;
+		bool is_reflex_ = true, is_on_ = true;
+		Sprite sprite_;
 
-	void shift(float);
-};	
+		void shift(float);
+	};
 
-class AnimationEditor{
-public:
-	Animation::AnimationType key_type_;
-	std::map <Animation::AnimationType, Animation> animationMap;
-	AnimationEditor(){}
-	~AnimationEditor(){}
+	class AnimationEditor {
+	public:
+		ID key_id_;
+		std::map <ID, Animation> animation_map_;
+		AnimationEditor() {}
+		~AnimationEditor() {}
 
-	void addAnimation(Animation::AnimationType type, Texture &texture, int left, int top, int width, int height, int numberOfFrames, float animationSpeed, int step);
-	void setAnimation(Animation::AnimationType);
-	void playAnimation();
-	void pauseAnimation();
-	void set_isReflex(bool);
-	void shiftAnimation(float);
-	void drawAnimation(RenderWindow&, int, int);
-	void drawAnimation(RenderTexture&, int x, int y);
-	void drawAnimationByName(Animation::AnimationType, RenderTexture&, int, int);
-};
+		void addAnimation(ID, Texture&, int, int, int, int, int, float, int);
+		void setAnimation(ID);
+		void playAnimation();
+		void pauseAnimation();
+		void setReflex(bool);
+		void shiftAnimation(float);
+		void drawAnimation(RenderWindow&, int, int);
+		void drawAnimation(RenderTexture&, int, int);
+		void drawAnimationByID(ID, RenderTexture&, int, int);
+	};
+}

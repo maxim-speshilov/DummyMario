@@ -1,38 +1,38 @@
 #include "UIWidget.h"
 
 UIWidget::UIWidget(Vector2f pos) {
-	this->pos = pos; 
+	this->pos_ = pos; 
 }
 
 Score::Score(Vector2f pos, Text& widget_object, int score) :
 UIWidget(pos) {
-	this->text_object = widget_object;
-	this->score = score;
-	this->type = std::string("score");
-	this->text_object.setPosition(pos);
-	this->text_object.setFillColor(Color::White);
+	text_object_ = widget_object;
+	score_ = score;
+	type_ = std::string("score");
+	text_object_.setPosition(pos);
+	text_object_.setFillColor(Color::White);
 }
 
 void Score::setScore(int score) {
-	this->score = score;
+	score_ = score;
 }
 
 int Score::getScore() const {
-	return this->score;
+	return score_;
 }
 
 void Score::draw(sf::RenderWindow& window) {
-	text_object.setString(std::to_string(this->score));
-	window.draw(this->text_object);
+	text_object_.setString(std::to_string(score_));
+	window.draw(text_object_);
 };
 
 void Score::draw(sf::RenderTexture& rt) {
-    text_object.setString(std::to_string(this->score));
-	rt.draw(this->text_object);
+    text_object_.setString(std::to_string(score_));
+	rt.draw(this->text_object_);
 }
 
 void Score::addScore(int score_to_add) {
-	score += score_to_add;
+	score_ += score_to_add;
 }
 ;
 
@@ -43,32 +43,32 @@ Score& Score::operator+= (int score_to_add) {
 
 Lives::Lives(Vector2f pos, int n_of_lives, int cur_n_of_lives) :
 UIWidget(pos) {
-	numberOfLives = n_of_lives;
-	currentNumberOfLives = cur_n_of_lives;
+	number_of_lives_ = n_of_lives;
+	current_number_of_lives_ = cur_n_of_lives;
 }
 
 void Lives::addLives(int n_of_lives) {
-	if (currentNumberOfLives == numberOfLives)
-		numberOfLives += n_of_lives;
-	currentNumberOfLives += n_of_lives;
+	if (current_number_of_lives_ == number_of_lives_)
+		number_of_lives_ += n_of_lives;
+	current_number_of_lives_ += n_of_lives;
 }
 
 void Lives::deleteLive() {
-	currentNumberOfLives--;
+	current_number_of_lives_--;
 }
 
-Lives & Lives::operator+=(int lives_to_add)
+Lives& Lives::operator+=(int lives_to_add)
 {
 	addLives(lives_to_add);
 	return *this;
 }
 
-Lives & Lives::operator++() {
+Lives& Lives::operator++() {
 	addLives(1);
 	return *this;
 }
 
-Lives & Lives::operator--()
+Lives& Lives::operator--()
 {
 	deleteLive();
 	return *this;
@@ -76,30 +76,30 @@ Lives & Lives::operator--()
 
 
 void Lives::draw(RenderWindow& window) {
-	for (int i = 0; i < numberOfLives - currentNumberOfLives; i++) {
-		editor.setAnimation(Animation::AnimationType::Dead);
-		editor.drawAnimation(window, pos.x - 34 * i, pos.y);
+	for (int i = 0; i < number_of_lives_ - current_number_of_lives_; i++) {
+		editor_.setAnimation(animation::kDead);
+		editor_.drawAnimation(window, pos_.x - 34 * i, pos_.y);
 	}
 
-	for (int i = numberOfLives - currentNumberOfLives; i < numberOfLives; i++) {
-		editor.setAnimation(Animation::AnimationType::Staying);
-		editor.drawAnimation(window, pos.x - 34 * i, pos.y);
+	for (int i = number_of_lives_ - current_number_of_lives_; i < number_of_lives_; i++) {
+		editor_.setAnimation(animation::kStaying);
+		editor_.drawAnimation(window, pos_.x - 34 * i, pos_.y);
 	}
 }
 
 
 void Lives::draw(RenderTexture& rt) {
-	for (int i = 0; i < numberOfLives - currentNumberOfLives; i++) {
-		editor.setAnimation(Animation::AnimationType::Dead);
-		editor.drawAnimation(rt, pos.x - 34 * i, pos.y);
+	for (int i = 0; i < number_of_lives_ - current_number_of_lives_; i++) {
+		editor_.setAnimation(animation::kDead);
+		editor_.drawAnimation(rt, pos_.x - 34 * i, pos_.y);
 	}
 
-	for (int i = numberOfLives - currentNumberOfLives; i < numberOfLives; i++) {
-		editor.setAnimation(Animation::AnimationType::Staying);
-		editor.drawAnimation(rt, pos.x - 34 * i, pos.y);
+	for (int i = number_of_lives_ - current_number_of_lives_; i < number_of_lives_; i++) {
+		editor_.setAnimation(animation::kStaying);
+		editor_.drawAnimation(rt, pos_.x - 34 * i, pos_.y);
 	}
 }
 
 int Lives::getCurrentLives() const {
-	return currentNumberOfLives;
+	return current_number_of_lives_;
 }

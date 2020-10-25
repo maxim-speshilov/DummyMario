@@ -1,5 +1,4 @@
-#include "Entity.h"
-#include "UIWidget.h"
+#include "Game.h"
 
 struct GameSettings {
 	unsigned int timeCoef;
@@ -14,9 +13,11 @@ struct GameSettings {
 
 GameSettings settings;
 
-// TODO(me) : Create right game structure: start menu, settings, level loading with black screen, game over screen. 
+// TODO(me) : Create right game structure: start menu, settings, game over screen. 
 
-bool gameLoop() {
+Game::Game() { ; }
+
+bool Game::run() {
 
 	float screen_width = 480.f;
 	float screen_height = 600.f;
@@ -93,13 +94,15 @@ bool gameLoop() {
 		view.reset(sf::FloatRect(0.f, level_height - (float)screen_height, screen_width, screen_height));
 
 		Texture running_set, rolling_set, jumping_set;
-		Player player(scene, { scene.getObjectsByType("player").at(0).rect.left, scene.getObjectsByType("player").at(0).rect.top }, 23, 28);
+		entity::Player player(scene, { scene.getObjectsByType("Player").at(0).rect_.left, scene.getObjectsByType("Player").at(0).rect_.top }, 23, 28);
 
-		running_set.loadFromFile("textures/run_set.png"); rolling_set.loadFromFile("textures/rolling_set.png"), jumping_set.loadFromFile("textures/jump_set.png");
-		player.editor.addAnimation(Animation::AnimationType::Running, running_set, 0, 0, 23, 28, 8, 0.005, 23);
-		player.editor.addAnimation(Animation::AnimationType::Staying, running_set, 0, 0, 23, 28, 1, 0, 0);
-		player.editor.addAnimation(Animation::AnimationType::Rolling, rolling_set, 0, 0, 22, 28, 8, 0.02, 22);
-		player.editor.addAnimation(Animation::AnimationType::Jumping, jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
+		running_set.loadFromFile("textures/run_set.png"); 
+		rolling_set.loadFromFile("textures/rolling_set.png"), 
+		jumping_set.loadFromFile("textures/jump_set.png");
+		player.editor_.addAnimation(animation::kRunning, running_set, 0, 0, 23, 28, 8, 0.005, 23);
+		player.editor_.addAnimation(animation::kStaying, running_set, 0, 0, 23, 28, 1, 0, 0);
+		player.editor_.addAnimation(animation::kRolling, rolling_set, 0, 0, 22, 28, 8, 0.02, 22);
+		player.editor_.addAnimation(animation::kJumping, jumping_set, 0, 0, 24, 28, 4, 0.005, 24);
 
 		Texture enemy_set, moving_platform_set, moving_up_platform_set, coin_set;
 		enemy_set.loadFromFile("textures/enemy_set.png");
@@ -114,8 +117,8 @@ bool gameLoop() {
 		Lives lives(Vector2f(screen_width - 34, 10.f), 3, 3);
 		full_heart.loadFromFile("textures/full_heart.png");
 		void_heart.loadFromFile("textures/void_heart.png");
-		lives.editor.addAnimation(Animation::AnimationType::Staying, full_heart, 0, 0, 32, 32, 1, 0, 0);
-		lives.editor.addAnimation(Animation::AnimationType::Dead, void_heart, 0, 0, 32, 32, 1, 0, 0);
+		lives.editor_.addAnimation(animation::kStaying, full_heart, 0, 0, 32, 32, 1, 0, 0);
+		lives.editor_.addAnimation(animation::kDead, void_heart, 0, 0, 32, 32, 1, 0, 0);
 		
 		std::list <std::unique_ptr<UIWidget>> ui_widgets;
 		std::list <std::unique_ptr<UIWidget>>::iterator widgets_it;
@@ -125,65 +128,65 @@ bool gameLoop() {
 
 		vector <Object> scene_objects = scene.getAllObjects();
 			
-		std::list <std::unique_ptr<Entity>> entities;
-		std::list <std::unique_ptr<Entity>>::iterator entities_it;
+		std::list <std::unique_ptr<entity::Entity>> entities;
+		std::list <std::unique_ptr<entity::Entity>>::iterator entities_it;
 
 		/* ----- Adding entities ----- */
 		for (Object scene_object : scene.getAllObjects()) {
 
-			if (scene_object.type == "enemy") {
-				Entity::MoveDirection dir;
+			if (scene_object.type_ == "Enemy") {
+				entity::MoveDirection dir;
 				if (scene_object.getPropertyByName("Direction") == "Right")
-					dir = Entity::MoveDirection::Right;
+					dir = entity::MoveDirection::kRight;
 				else
-					dir = Entity::MoveDirection::Left;
-				entities.push_front(std::make_unique <Enemy> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 16, 16, dir));
+					dir = entity::MoveDirection::kLeft;
+				entities.push_front(std::make_unique <entity::Enemy> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 16, 16, dir));
 
 			} 
-			if (scene_object.type == "coin") {
-				entities.push_front(std::make_unique <Coin> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32));
+			if (scene_object.type_ == "Coin") {
+				entities.push_front(std::make_unique <entity::Coin> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 32, 32));
 			}
 
-			if (scene_object.type == "moving platform") {
+			if (scene_object.type_ == "MovingPlatform") {
 
-				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 96, 32,
-					Entity::MoveDirection::Right));
-
-			}
-
-			if (scene_object.type == "moving up platform") {
-
-				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32, 
-					Entity::MoveDirection::Up));
+				entities.push_front(std::make_unique <entity::MovingPlatform> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 96, 32,
+					entity::MoveDirection::kRight));
 
 			}
 
-			if (scene_object.type == "ExtraLife") {
-				entities.push_front(std::make_unique <ExtraLife> (scene, Vector2f(scene_object.rect.left, scene_object.rect.top), 32, 32));
+			if (scene_object.type_ == "MovingVerticallyPlatform") {
+
+				entities.push_front(std::make_unique <entity::MovingPlatform> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 32, 32,
+					entity::MoveDirection::kUp));
+
+			}
+
+			if (scene_object.type_ == "ExtraLife") {
+				entities.push_front(std::make_unique <entity::ExtraLife> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 32, 32));
 			}
 		}
 	
 		/* ----- Adding animations ----- */
 		for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
-			if ((*entities_it)->type == Entity::EntityType::Enemy) {
-				(*entities_it)->editor.addAnimation(Animation::AnimationType::Running, enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
-				(*entities_it)->editor.addAnimation(Animation::AnimationType::Dead, enemy_set, 34, 33, 16, 8, 1, 0, 0);
+			if ((*entities_it)->type_ == entity::Type::kEnemy) {
+				(*entities_it)->editor_.addAnimation(animation::kRunning, enemy_set, 0, 25, 16, 16, 2, 0.005, 16);
+				(*entities_it)->editor_.addAnimation(animation::kDead, enemy_set, 34, 33, 16, 8, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type == Entity::EntityType::MovingPlatform) {
-				(*entities_it)->editor.addAnimation(Animation::AnimationType::Running, moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
+			if ((*entities_it)->type_ == entity::Type::kMovingPlatform) {
+				(*entities_it)->editor_.addAnimation(animation::kRunning, moving_platform_set, 0, 0, 96, 32, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type == Entity::EntityType::MovingVerticallyPlatform) {
-				(*entities_it)->editor.addAnimation(Animation::AnimationType::Climbing, moving_up_platform_set, 0, 0, 32, 32, 1, 0, 0);
+			if ((*entities_it)->type_ == entity::Type::kMovingVerticallyPlatform) {
+				(*entities_it)->editor_.addAnimation(animation::kClimbing, moving_up_platform_set, 0, 0, 32, 32, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type == Entity::EntityType::Coin) {
-				(*entities_it)->editor.addAnimation(Animation::AnimationType::Spinning, coin_set, 0, 0, 32, 32, 4, 0.008, 32);
+			if ((*entities_it)->type_ == entity::Type::kCoin) {
+				(*entities_it)->editor_.addAnimation(animation::kSpinning, coin_set, 0, 0, 32, 32, 4, 0.008, 32);
 			}
 
-			if ((*entities_it)->type == Entity::EntityType::ExtraLife) {
-				(*entities_it)->editor.addAnimation(Animation::AnimationType::Staying, full_heart, 0, 0, 32, 32, 1, 0, 0);
+			if ((*entities_it)->type_ == entity::Type::kExtraLife) {
+				(*entities_it)->editor_.addAnimation(animation::kStaying, full_heart, 0, 0, 32, 32, 1, 0, 0);
 			}
 		}
 
@@ -227,28 +230,27 @@ bool gameLoop() {
 			Vector2f joystick_pos = Vector2f(Joystick::getAxisPosition(0, Joystick::X), Joystick::getAxisPosition(0, Joystick::Y));
 
 			if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A) || joystick_pos.x < -15.f) {
-					player.isKeyPressed["Left"] = true;
+					player.is_key_pressed_["Left"] = true;
 				}
 			if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D) || joystick_pos.x > 15.f) {
-					player.isKeyPressed["Right"] = true;
+					player.is_key_pressed_["Right"] = true;
 				}
 			if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W) || Joystick::isButtonPressed(0, 1)) {
-					player.isKeyPressed["Up"] = true;
-					if ((player.isOnGround) && jump.getStatus() != SoundSource::Playing)
+					player.is_key_pressed_["Up"] = true;
+					if ((player.is_on_ground_) && jump.getStatus() != SoundSource::Playing)
 						jump.play();
 				}
 			if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S) || joystick_pos.y > 15.f) {
-					player.isKeyPressed["Down"] = true;
+					player.is_key_pressed_["Down"] = true;
 				}
 			if (Keyboard::isKeyPressed(Keyboard::Escape)) {
 					return false;
 				}
-			
 
 
 			player.update(time);
 
-			if (player.rect.intersects(scene.getFirstObject("ExitPipe").rect)) {
+			if (player.rect_.intersects(scene.getFirstObject("ExitPipe").rect_)) {
 				settings.levelCount++;
 				window.clear(Color::Black);
 				break;
@@ -258,22 +260,22 @@ bool gameLoop() {
 
 			Vector2f current_view_center = view.getCenter();
 
-			if (player.rect.left > screen_width / 2 && player.rect.left < level_width - screen_width / 2) {
-				view.setCenter(player.rect.left, current_view_center.y);
+			if (player.rect_.left > screen_width / 2 && player.rect_.left < level_width - screen_width / 2) {
+				view.setCenter(player.rect_.left, current_view_center.y);
 			}
 
 			current_view_center = view.getCenter();
 
-			if ((player.rect.top > view.getSize().y / 2 && player.rect.top < scene.getSize().y * scene.getTileSize().y - view.getSize().y / 2)) {
-				view.setCenter(current_view_center.x, player.rect.top);
+			if ((player.rect_.top > view.getSize().y / 2 && player.rect_.top < scene.getSize().y * scene.getTileSize().y - view.getSize().y / 2)) {
+				view.setCenter(current_view_center.x, player.rect_.top);
 			}
 
 			/* ----- Entities updating -----*/
 
 			for (entities_it = entities.begin(); entities_it != entities.end();) {
 				(*entities_it)->update(time);
-				if ((*entities_it)->state == Entity::EntityState::Dead)
-					if ((*entities_it)->type == Entity::EntityType::Enemy)
+				if ((*entities_it)->state_ == entity::State::kDead)
+					if ((*entities_it)->type_ == entity::Type::kEnemy)
 						if (globalTime - (*entities_it)->death_time_ > 0.5f)
 							entities_it = entities.erase(entities_it);
 						else
@@ -287,15 +289,15 @@ bool gameLoop() {
 			/* ----- Entities processing -----*/
 
 			for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
-				if (player.rect.intersects((*entities_it)->rect)) {
-					if ((*entities_it)->type == Entity::EntityType::Enemy) {
-						if (player.speed.y > 0) {
-							(*entities_it)->speed.x = 0;
-							player.speed.y *= (-1);
-							(*entities_it)->state = Entity::EntityState::Dead;
+				if (player.rect_.intersects((*entities_it)->rect_)) {
+					if ((*entities_it)->type_ == entity::Type::kEnemy) {
+						if (player.speed_.y > 0) {
+							(*entities_it)->speed_.x = 0;
+							player.speed_.y *= (-1);
+							(*entities_it)->state_ = entity::State::kDead;
 							(*entities_it)->death_time_ = globalTime;
 						}
-						else if ((*entities_it)->state != Entity::EntityState::Dead && !isInvulnerable) {
+						else if ((*entities_it)->state_ != entity::State::kDead && !isInvulnerable) {
 							if (main_theme.getStatus() == SoundSource::Playing) {
 								main_theme.pause();
 								lost_a_life.play();
@@ -303,7 +305,7 @@ bool gameLoop() {
 							if (lives.getCurrentLives() == 1) 
 								return true;
 							else {
-								player.state = Entity::EntityState::Invulnerable;
+								player.state_ = entity::State::kInvulnerable;
 								invulnerableCheckTime = globalTime;
 								isInvulnerable = true;
 								lives--;
@@ -311,46 +313,46 @@ bool gameLoop() {
 						}
 							
 					}
-					else if ((*entities_it)->type == Entity::EntityType::MovingPlatform) {
-						if (player.speed.y > 0) {
-							player.rect.top = (*entities_it)->rect.top - player.rect.height;
-							player.speed.y = 0;
-							Entity::MoveDirection player_dir = player.getDirection();
-							Entity::MoveDirection platform_dir = (*entities_it)->getDirection();
+					else if ((*entities_it)->type_ == entity::Type::kMovingPlatform) {
+						if (player.speed_.y > 0) {
+							player.rect_.top = (*entities_it)->rect_.top - player.rect_.height;
+							player.speed_.y = 0;
+							entity::MoveDirection player_dir = player.getDirection();
+							entity::MoveDirection platform_dir = (*entities_it)->getDirection();
 
-							player.rect.left += (player.speed.x / 10 + (*entities_it)->speed.x)*time;
+							player.rect_.left += (player.speed_.x / 10 + (*entities_it)->speed_.x)*time;
 
-							player.isOnGround = true;
-							player.state = Entity::EntityState::Staying;
+							player.is_on_ground_ = true;
+							player.state_ = entity::State::kStaying;
 						}
-						else if (player.speed.y < 0) {
-							player.rect.top = (*entities_it)->rect.top + 32;
-							player.speed.y = 0;
+						else if (player.speed_.y < 0) {
+							player.rect_.top = (*entities_it)->rect_.top + 32;
+							player.speed_.y = 0;
 						}
 					}
 
-					else if ((*entities_it)->type == Entity::EntityType::MovingVerticallyPlatform) {
-						if (player.speed.y > 0) {
-							player.rect.top = (*entities_it)->rect.top - player.rect.height;
-							player.speed.y = 0;
-							Entity::MoveDirection player_dir = player.getDirection();
-							Entity::MoveDirection platform_dir = (*entities_it)->getDirection();
-							player.rect.top += (*entities_it)->speed.y*time;
-							player.isOnGround = true;
-							player.state = Entity::EntityState::Staying;
+					else if ((*entities_it)->type_ == entity::Type::kMovingVerticallyPlatform) {
+						if (player.speed_.y > 0) {
+							player.rect_.top = (*entities_it)->rect_.top - player.rect_.height;
+							player.speed_.y = 0;
+							entity::MoveDirection player_dir = player.getDirection();
+							entity::MoveDirection platform_dir = (*entities_it)->getDirection();
+							player.rect_.top += (*entities_it)->speed_.y*time;
+							player.is_on_ground_ = true;
+							player.state_ = entity::State::kStaying;
 						}
-						else if (player.speed.y < 0) {
-							player.rect.top = (*entities_it)->rect.top + 32;
-							player.speed.y = 0;
+						else if (player.speed_.y < 0) {
+							player.rect_.top = (*entities_it)->rect_.top + 32;
+							player.speed_.y = 0;
 						}
 					}
-					else if ((*entities_it)->type == Entity::EntityType::Coin) {
+					else if ((*entities_it)->type_ == entity::Type::kCoin) {
 						coin.play();
-						(*entities_it)->state = Entity::EntityState::Dead;
+						(*entities_it)->state_ = entity::State::kDead;
 						score += 100;
 					}
-					else if ((*entities_it)->type == Entity::EntityType::ExtraLife) {
-						(*entities_it)->state = Entity::EntityState::Dead;
+					else if ((*entities_it)->type_ == entity::Type::kExtraLife) {
+						(*entities_it)->state_ = entity::State::kDead;
 						lives++;
 					}
 					
@@ -362,10 +364,10 @@ bool gameLoop() {
 
 			scene.draw(game_rt);
 
-			player.editor.drawAnimation(game_rt, player.rect.left, player.rect.top);
+			player.editor_.drawAnimation(game_rt, player.rect_.left, player.rect_.top);
 
 			for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++)
-				(*entities_it)->editor.drawAnimation(game_rt, (*entities_it)->rect.left, (*entities_it)->rect.top);
+				(*entities_it)->editor_.drawAnimation(game_rt, (*entities_it)->rect_.left, (*entities_it)->rect_.top);
 
 			game_rt.display();
 

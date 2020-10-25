@@ -1,8 +1,9 @@
-#include "Entity.h"
+#include "Game.h"
 
 int main(){
 
-	if (gameLoop());
+	Game game;
+	if (game.run());
 	
 	return 0;
 }

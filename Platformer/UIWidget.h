@@ -8,10 +8,10 @@
 using namespace sf;
 
 class UIWidget {
-protected:
-	Vector2f pos;
-	AnimationEditor editor;
-	std::string type;
+public:
+	Vector2f pos_;
+	animation::AnimationEditor editor_;
+	std::string type_;
 public:
 	UIWidget(Vector2f);
 	friend bool gameLoop();
@@ -21,8 +21,8 @@ public:
 
 class Score : public UIWidget {
 private:
-	int score;
-	Text text_object;
+	int score_;
+	Text text_object_;
 public:
 	Score(Vector2f, Text&, int);
 	void setScore(int);
@@ -35,8 +35,8 @@ public:
 
 class Lives : public UIWidget {
 private:
-	unsigned int numberOfLives;
-	unsigned int currentNumberOfLives;
+	unsigned int number_of_lives_;
+	unsigned int current_number_of_lives_;
 public:
 	Lives(Vector2f, int, int);
 	void draw(sf::RenderWindow&) override;
