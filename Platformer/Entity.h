@@ -13,8 +13,10 @@
 using namespace sf;
 
 // TODO(me): Change update. Change entity to avoid storing vector of pointers to level objects.
-namespace entity {
-	enum MoveDirection
+
+class Entity {
+public:
+	enum class MoveDirection
 	{
 		kNowhere,
 		kRight,
@@ -23,7 +25,7 @@ namespace entity {
 		kDown
 	};
 
-	enum State
+	enum class State
 	{
 		kStaying,
 		kRunning,
@@ -36,7 +38,7 @@ namespace entity {
 		kInvulnerable
 	};
 
-	enum Type
+	enum class Type
 	{
 		kPlayer,
 		kEnemy,
@@ -45,57 +47,25 @@ namespace entity {
 		kCoin,
 		kExtraLife
 	};
-}
 
-class Entity {
 public:
 	Vector2f speed_;
 	FloatRect rect_;
-	bool is_on_ground_, is_size_changed_;
-	entity::MoveDirection direction_;
-	entity::State state_;
+	MoveDirection direction_;
+	State state_;
 	animation::AnimationEditor editor_;
 	vector <std::shared_ptr<Object>> level_objects_;
-	entity::Type type_;
+	Type type_;
 	float death_time_ = INFINITY;
+
 public:
 	Entity(Scene&, Vector2f, int, int);
 	Entity();
 	~Entity();
-	entity::MoveDirection getDirection();
+
 	virtual void update(float) = 0;
-};
 
-// TODO(me): Fix position bug that happens when resizing window.
-class Player : public Entity {
-private:
-	Vector2f key_speed_ = Vector2f(0.1f, 0.65f);
-public:
-	Player(Scene&, Vector2f, int, int);
-	Player();
-	bool is_on_platform_;
-	std::map <String, bool> is_key_pressed_;
-	void update(float) override;
-	void mapProcessing(int);
-	void keyboardProcessing();
-	void setKeySpeed(Vector2f);
-};
-
-
-class Enemy : public Entity {
-public:
-	Enemy(Scene&, Vector2f, int, int, entity::MoveDirection);
-	void update(float) override;
-	void mapProcessing();
-};
-
-class MovingPlatform : public Entity {
-private:
-	float time_to_turn_;
-public:
-	MovingPlatform(Scene&, Vector2f, int, int, entity::MoveDirection);
-	void update(float) override;
-	void mapProcessing();
+	MoveDirection getDirection();
 };
 
 class Coin : public Entity {

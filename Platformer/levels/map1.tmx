@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="327">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="328">
  <tileset firstgid="1" source="tiles3.tsx"/>
  <objectgroup id="2" name="Слой объектов 1">
   <object id="2" type="Solid" x="576" y="1088.13" width="96.125" height="96"/>
@@ -273,7 +273,7 @@
   <object id="322" name="MovingVerticallyPlatform" type="MovingVerticallyPlatform" x="863.833" y="224" width="32.3333" height="32"/>
   <object id="323" name="PlatformBorder" type="PlatformBorder" x="863.333" y="321.167" width="31.3333" height="1.66667"/>
   <object id="324" name="PlatformBorder" type="PlatformBorder" x="863.667" y="127.167" width="31.3333" height="1.66667"/>
-  <object id="326" type="ExitPipe" x="180.561" y="1069.2" width="53.5455" height="4.2727"/>
+  <object id="327" type="ExitPipe" x="1511.5" y="60.75" width="50.5" height="2"/>
  </objectgroup>
  <layer id="6" name="Слой тайлов 1" width="50" height="40">
   <data>

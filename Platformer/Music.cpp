@@ -33,6 +33,7 @@ void MusicPlayer::stop() {
 
 void MusicPlayer::setLoop(bool is_looped) {
 	is_looped_ = is_looped;
+	music_.setLoop(is_looped_);
 }
 
 void MusicPlayer::setVolume(float volume) {
@@ -42,7 +43,7 @@ void MusicPlayer::setVolume(float volume) {
 
 
 sf::SoundSource::Status MusicPlayer::getStatus(ID music_id) const {
-	if (music_id == music_id_)
+	if (music_id == music_id_ && music_.getStatus() == sf::SoundSource::Playing)
 		return sf::SoundSource::Playing;
 	else
 		return sf::SoundSource::Stopped;

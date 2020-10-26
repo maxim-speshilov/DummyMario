@@ -1,4 +1,7 @@
 #include "Game.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "MovingPlatform.h"
 #include "Sound.h"
 #include "Music.h"
 #include "ResourceHolder.h"
@@ -152,11 +155,11 @@ bool Game::run() {
 		for (Object scene_object : scene.getAllObjects()) {
 
 			if (scene_object.type_ == "Enemy") {
-				entity::MoveDirection dir;
+				Entity::MoveDirection dir;
 				if (scene_object.getPropertyByName("Direction") == "Right")
-					dir = entity::MoveDirection::kRight;
+					dir = Entity::MoveDirection::kRight;
 				else
-					dir = entity::MoveDirection::kLeft;
+					dir = Entity::MoveDirection::kLeft;
 				entities.push_front(std::make_unique <Enemy> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 16, 16, dir));
 
 			} 
@@ -167,14 +170,14 @@ bool Game::run() {
 			if (scene_object.type_ == "MovingPlatform") {
 
 				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 96, 32,
-					entity::MoveDirection::kRight));
+					Entity::MoveDirection::kRight));
 
 			}
 
 			if (scene_object.type_ == "MovingVerticallyPlatform") {
 
 				entities.push_front(std::make_unique <MovingPlatform> (scene, Vector2f(scene_object.rect_.left, scene_object.rect_.top), 32, 32,
-					entity::MoveDirection::kUp));
+					Entity::MoveDirection::kUp));
 
 			}
 
@@ -194,30 +197,32 @@ bool Game::run() {
 		lives.editor_.addAnimation(animation::kDead, textures.get(textures::ID::kVoidHeart), 0, 0, 32, 32, 1, 0, 0);
 
 		for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
-			if ((*entities_it)->type_ == entity::Type::kEnemy) {
+			if ((*entities_it)->type_ == Entity::Type::kEnemy) {
 				(*entities_it)->editor_.addAnimation(animation::kRunning, textures.get(textures::ID::kEnemy), 0, 25, 16, 16, 2, 0.005, 16);
 				(*entities_it)->editor_.addAnimation(animation::kDead, textures.get(textures::ID::kEnemy), 34, 33, 16, 8, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type_ == entity::Type::kMovingPlatform) {
+			if ((*entities_it)->type_ == Entity::Type::kMovingPlatform) {
 				(*entities_it)->editor_.addAnimation(animation::kRunning, textures.get(textures::ID::kMovingPlatform), 0, 0, 96, 32, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type_ == entity::Type::kMovingVerticallyPlatform) {
+			if ((*entities_it)->type_ == Entity::Type::kMovingVerticallyPlatform) {
 				(*entities_it)->editor_.addAnimation(animation::kClimbing, textures.get(textures::ID::kMovingVerticallyPlatform), 0, 0, 32, 32, 1, 0, 0);
 			}
 
-			if ((*entities_it)->type_ == entity::Type::kCoin) {
+			if ((*entities_it)->type_ == Entity::Type::kCoin) {
 				(*entities_it)->editor_.addAnimation(animation::kSpinning, textures.get(textures::ID::kCoin), 0, 0, 32, 32, 4, 0.008, 32);
 			}
 
-			if ((*entities_it)->type_ == entity::Type::kExtraLife) {
+			if ((*entities_it)->type_ == Entity::Type::kExtraLife) {
 				(*entities_it)->editor_.addAnimation(animation::kStaying, textures.get(textures::ID::kFullHeart), 0, 0, 32, 32, 1, 0, 0);
 			}
 		}
 
-		main_theme.play();
-		main_theme.setLoop(true);
+		/*(main_theme.play();
+		main_theme.setLoop(true);*/
+		music_player.play(music::ID::kMainTheme);
+		music_player.setLoop(true);
 
 		while (clock.getElapsedTime().asSeconds() < 3.f) continue;
 		clock.restart();
@@ -266,11 +271,12 @@ bool Game::run() {
 			time_since_last_update += clock.restart().asSeconds() * settings.time_coef_;
 			global_time += time_since_last_update; 
 
-			if (main_theme.getStatus() != SoundSource::Playing && lost_a_life.getStatus() != SoundSource::Playing) {
-				main_theme.play();
-				lost_a_life.setPlayingOffset(seconds(0.f));
+			if (music_player.getStatus(music::ID::kMainTheme) != SoundSource::Playing && 
+				music_player.getStatus(music::ID::kLostALife) != SoundSource::Playing) { 
+				music_player.setLoop(true);
+				music_player.play(music::ID::kMainTheme);
 			}
-
+			
 			if ((global_time - invulnerableCheckTime) >= 2.f * settings.time_coef_) {
 				invulnerableCheckTime = INFINITY;
 				isInvulnerable = false;
@@ -330,8 +336,8 @@ bool Game::run() {
 
 				for (entities_it = entities.begin(); entities_it != entities.end();) {
 					(*entities_it)->update(settings.time_per_frame_.asSeconds() * settings.time_coef_);
-					if ((*entities_it)->state_ == entity::State::kDead)
-						if ((*entities_it)->type_ == entity::Type::kEnemy)
+					if ((*entities_it)->state_ == Entity::State::kDead)
+						if ((*entities_it)->type_ == Entity::Type::kEnemy)
 							if (global_time - (*entities_it)->death_time_ > 0.5f * settings.time_coef_) {
 								entities_it = entities.erase(entities_it);
 							}
@@ -347,22 +353,21 @@ bool Game::run() {
 
 				for (entities_it = entities.begin(); entities_it != entities.end(); entities_it++) {
 					if (player.rect_.intersects((*entities_it)->rect_)) {
-						if ((*entities_it)->type_ == entity::Type::kEnemy) {
+						if ((*entities_it)->type_ == Entity::Type::kEnemy) {
 							if (player.speed_.y > 0) {
 								(*entities_it)->speed_.x = 0;
 								player.speed_.y *= (-1);
-								(*entities_it)->state_ = entity::State::kDead;
+								(*entities_it)->state_ = Entity::State::kDead;
 								(*entities_it)->death_time_ = global_time;
 							}
-							else if ((*entities_it)->state_ != entity::State::kDead && !isInvulnerable) {
-								if (main_theme.getStatus() == SoundSource::Playing) {
-									main_theme.pause();
-									lost_a_life.play();
-								}
+							else if ((*entities_it)->state_ != Entity::State::kDead && !isInvulnerable) {
+								music_player.stop();
+								music_player.setLoop(false);
+								music_player.play(music::ID::kLostALife);
 								if (lives.getCurrentLives() == 1)
 									return true;
 								else {
-									player.state_ = entity::State::kInvulnerable;
+									player.state_ = Entity::State::kInvulnerable;
 									invulnerableCheckTime = global_time;
 									isInvulnerable = true;
 									lives--;
@@ -370,17 +375,17 @@ bool Game::run() {
 							}
 
 						}
-						else if ((*entities_it)->type_ == entity::Type::kMovingPlatform) {
+						else if ((*entities_it)->type_ == Entity::Type::kMovingPlatform) {
 							if (player.speed_.y > 0) {
 								player.rect_.top = (*entities_it)->rect_.top - player.rect_.height;
 								player.speed_.y = 0;
-								entity::MoveDirection player_dir = player.getDirection();
-								entity::MoveDirection platform_dir = (*entities_it)->getDirection();
+								Entity::MoveDirection player_dir = player.getDirection();
+								Entity::MoveDirection platform_dir = (*entities_it)->getDirection();
 
 								player.rect_.left += (player.speed_.x / 10 + (*entities_it)->speed_.x) * settings.time_per_frame_.asSeconds() * settings.time_coef_;
 
 								player.is_on_ground_ = true;
-								player.state_ = entity::State::kStaying;
+								player.state_ = Entity::State::kStaying;
 							}
 							else if (player.speed_.y < 0) {
 								player.rect_.top = (*entities_it)->rect_.top + 32;
@@ -388,31 +393,30 @@ bool Game::run() {
 							}
 						}
 
-						else if ((*entities_it)->type_ == entity::Type::kMovingVerticallyPlatform) {
+						else if ((*entities_it)->type_ == Entity::Type::kMovingVerticallyPlatform) {
 							if (player.speed_.y > 0) {
 								player.rect_.top = (*entities_it)->rect_.top - player.rect_.height;
 								player.speed_.y = 0;
-								entity::MoveDirection player_dir = player.getDirection();
-								entity::MoveDirection platform_dir = (*entities_it)->getDirection();
+								Entity::MoveDirection player_dir = player.getDirection();
+								Entity::MoveDirection platform_dir = (*entities_it)->getDirection();
 								player.rect_.top += (*entities_it)->speed_.y * time;
 								player.is_on_ground_ = true;
-								player.state_ = entity::State::kStaying;
+								player.state_ = Entity::State::kStaying;
 							}
 							else if (player.speed_.y < 0) {
 								player.rect_.top = (*entities_it)->rect_.top + 32;
 								player.speed_.y = 0;
 							}
 						}
-						else if ((*entities_it)->type_ == entity::Type::kCoin) {
+						else if ((*entities_it)->type_ == Entity::Type::kCoin) {
 							coin.play();
-							(*entities_it)->state_ = entity::State::kDead;
+							(*entities_it)->state_ = Entity::State::kDead;
 							score += 100;
 						}
-						else if ((*entities_it)->type_ == entity::Type::kExtraLife) {
-							(*entities_it)->state_ = entity::State::kDead;
+						else if ((*entities_it)->type_ == Entity::Type::kExtraLife) {
+							(*entities_it)->state_ = Entity::State::kDead;
 							lives++;
 						}
-
 					}
 				}
 			}
