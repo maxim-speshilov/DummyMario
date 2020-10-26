@@ -273,7 +273,7 @@
   <object id="322" name="MovingVerticallyPlatform" type="MovingVerticallyPlatform" x="863.833" y="224" width="32.3333" height="32"/>
   <object id="323" name="PlatformBorder" type="PlatformBorder" x="863.333" y="321.167" width="31.3333" height="1.66667"/>
   <object id="324" name="PlatformBorder" type="PlatformBorder" x="863.667" y="127.167" width="31.3333" height="1.66667"/>
-  <object id="327" type="ExitPipe" x="1511.5" y="60.75" width="50.5" height="2"/>
+  <object id="327" type="ExitPipe" x="1511" y="61.25" width="50.5" height="2"/>
  </objectgroup>
  <layer id="6" name="Слой тайлов 1" width="50" height="40">
   <data>
