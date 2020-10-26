@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class Object{
+class Object {
 public:
 	sf::FloatRect rect_;
 	sf::Sprite sprite;
@@ -18,13 +18,13 @@ public:
 	map <string, string> getProperties() const;
 };
 
-class Layer{
+class Layer {
 public:
 	vector <sf::Sprite> tileset;
 	int opacity;
 };
 
-class Scene{
+class Scene {
 private:
 	sf::Vector2f size, tileSize;
 	int firstTileGID; 
@@ -35,7 +35,7 @@ private:
 	sf::RenderTexture background_texture_;
 public:
 	Scene();
-	bool loadFromXmlFile (const char*);
+	bool loadFromXml (const char*);
 	vector <Object> getObjectsByType(string) const;
 	vector <Object> getAllObjects() const;
 	Object getFirstObject(string) const;

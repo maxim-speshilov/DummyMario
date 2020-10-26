@@ -9,7 +9,13 @@ Entity::Entity(Scene& level, Vector2f pos, int width, int height){
 	rect_ = FloatRect(pos.x, pos.y, width, height);
 }
 
-Entity::~Entity() { }
+Entity::Entity() {
+
+}
+
+Entity::~Entity() { 
+
+}
 
 MoveDirection Entity::getDirection() {
 	return this->direction_;
@@ -19,6 +25,14 @@ MoveDirection Entity::getDirection() {
 
 Player::Player(Scene& level, Vector2f pos, int width, int height) :
 	Entity(level, pos, width, height) {
+	state_ = kStaying;
+	type_ = Type::kPlayer;
+	is_on_ground_ = true;
+	speed_ = Vector2f(0, 0);
+}
+
+Player::Player() :
+	Entity() {
 	state_ = kStaying;
 	type_ = Type::kPlayer;
 	is_on_ground_ = true;

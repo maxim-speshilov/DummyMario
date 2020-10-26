@@ -100,6 +100,7 @@ void Lives::draw(RenderTexture& rt) {
 	}
 }
 
+
 int Lives::getCurrentLives() const {
 	return current_number_of_lives_;
 }

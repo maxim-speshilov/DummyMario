@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="60" height="15" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="100">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="left-up" width="60" height="15" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="103">
  <tileset firstgid="1" source="tiles3.tsx"/>
  <objectgroup id="9" name="Слой объектов 1">
   <object id="55" type="Solid" x="0" y="0" width="64" height="383.333"/>
@@ -25,15 +25,15 @@
   <object id="76" type="Solid" x="895.75" y="159.75" width="64.25" height="128"/>
   <object id="77" type="Solid" x="1023.82" y="287.636" width="32.3636" height="32.3636"/>
   <object id="78" type="Solid" x="928" y="288" width="32" height="96"/>
-  <object id="79" name="Player" type="player" x="106.625" y="242.125"/>
+  <object id="79" name="Player" type="Player" x="106.625" y="242.125"/>
   <object id="80" type="Solid" x="608" y="32" width="288" height="32"/>
   <object id="81" type="Solid" x="960.25" y="0.25" width="95.75" height="63.25"/>
-  <object id="86" name="Enemy" type="enemy" x="736" y="367.333">
+  <object id="86" name="Enemy" type="Enemy" x="736" y="367.333">
    <properties>
     <property name="Direction" value="Right"/>
    </properties>
   </object>
-  <object id="87" name="Moving Platform 1" type="moving platform" x="303" y="271"/>
+  <object id="87" name="Moving Platform 1" type="MovingPlatform" x="303" y="271"/>
   <object id="89" type="Solid" x="1088" y="0.666667" width="96" height="383.333"/>
   <object id="90" type="Solid" x="1056" y="383.333" width="160" height="32.6667"/>
   <object id="93" x="1024" y="447" height="2"/>
@@ -41,6 +41,9 @@
   <object id="96" type="Solid" x="1248" y="384" width="192" height="95.6667"/>
   <object id="97" type="Solid" x="1504.5" y="415.5" width="415" height="64"/>
   <object id="98" type="ExitPipe" x="1856.5" y="352" width="64" height="63.5"/>
+  <object id="100" name="Moving Platform 1" type="MovingVerticallyPlatform" x="403" y="232"/>
+  <object id="101" type="Coin" x="305" y="346" width="12" height="23"/>
+  <object id="102" type="ExtraLife" x="110" y="345" width="20" height="24"/>
  </objectgroup>
  <layer id="8" name="Слой тайлов 1" width="60" height="15">
   <data>

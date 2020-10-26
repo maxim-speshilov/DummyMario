@@ -4,6 +4,6 @@ int main(){
 
 	Game game;
 	if (game.run());
-	
+	//game.Run();
 	return 0;
 }

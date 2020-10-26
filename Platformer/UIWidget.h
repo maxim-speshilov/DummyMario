@@ -14,7 +14,6 @@ public:
 	std::string type_;
 public:
 	UIWidget(Vector2f);
-	friend bool gameLoop();
 	virtual void draw(sf::RenderWindow&) = 0;
 	virtual void draw(sf::RenderTexture&) = 0;
 };

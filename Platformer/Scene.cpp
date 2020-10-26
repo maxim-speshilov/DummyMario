@@ -1,30 +1,30 @@
 #include "Scene.h"
 #include <iostream>
 
-string Object::getPropertyByName(string name) const{
+string Object::getPropertyByName(string name) const {
 	return properties.at(name);
 }
 
-map <string, string> Object::getProperties() const{
+map <string, string> Object::getProperties() const {
 	return properties;
 }
 
 Scene::Scene() {
 };
 
-sf::Vector2f Scene::getSize() const{
+sf::Vector2f Scene::getSize() const {
 	return size;
 }
 
-sf::Vector2f Scene::getTileSize() const{
+sf::Vector2f Scene::getTileSize() const {
 	return tileSize;
 }
 
-int Scene::getSpacing() const{
+int Scene::getSpacing() const {
 	return spacing;
 }
 
-vector <Object> Scene::getObjectsByType(string type) const{
+vector <Object> Scene::getObjectsByType(string type) const {
 	vector <Object> result;
 
 	for (Object object : objects)
@@ -40,7 +40,7 @@ Object Scene::getFirstObject(string type) const {
 			return object;
 }
 
-vector <Object> Scene::getAllObjects() const{
+vector <Object> Scene::getAllObjects() const {
 	return objects;
 }
 
@@ -51,13 +51,13 @@ void Scene::draw(sf::RenderTexture &rt) const {
 	rt.draw(background_sprite);
 }
 
-void Scene::draw(sf::RenderWindow &window) const{
+void Scene::draw(sf::RenderWindow &window) const {
 	for (Layer layer : layers)
 		for (sf::Sprite tile : layer.tileset)
 			window.draw(tile);
 }
 
-bool Scene::loadFromXmlFile(const char* filename){
+bool Scene::loadFromXml(const char* filename) {
 	TiXmlDocument levelFile(filename);
 	if (!levelFile.LoadFile())
 		return false;
