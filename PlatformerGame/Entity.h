@@ -10,30 +10,41 @@
 #include "AnimationPlayer.h"
 #include "ResourceIdentifiers.h"
 
-// TODO(me): Change update. Change entity to avoid storing vector of pointers to level objects.
-
-
 class Entity : public SceneObject {
+public:
+	using Direction = std::pair<entities::MoveDirection, entities::MoveDirection>;
 public:
 	sf::Vector2f speed_;
 	entities::MoveDirection direction_;
 	entities::State state_;
-	std::vector <std::shared_ptr<SceneObject>> level_objects_;
-	entities::Type type_;
-	float death_time_ = INFINITY;
 
 public:
-	Entity(Scene&, sf::Vector2f, int, int);
-	Entity(Scene&, entities::Type, const TextureHolder&, sf::Vector2f, int, int);
+	Entity(SceneObject::Type, const TextureHolder&);
 	Entity();
-	~Entity();
 
-	virtual void update(float) = 0;
+	virtual void update(float dt, CommandQueue& commands) override;
 	virtual void draw(sf::RenderTarget& rt, sf::RenderStates states) const override;
-	entities::MoveDirection getDirection();
+
+	void updateDirection(); 
+
+	entities::MoveDirection getDirection() const;
+	entities::State getState() const;
+	sf::Vector2f getSpeed() const;
+
+	void setDirection(entities::MoveDirection dir);
+	void setState(entities::State state);
+	void setSpeed(const sf::Vector2f& speed);
+	void setSpeed(float speed_x, float speed_y);
+	void setSpeedX(float speed_x);
+	void setSpeedY(float speed_y);
+
+	void damage(float hp);
+	void heal(float hp);
 
 protected:
 	sf::Sprite sprite_;
 	AnimationPlayer animation_player_;
+
+	float hp_;
 };
 

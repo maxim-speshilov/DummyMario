@@ -1,0 +1,18 @@
+<settings>
+    <graphics>
+        <VerticalSync>
+            <kDisabled index="1" />
+        </VerticalSync>
+        <MouseCursorVisible>
+            <kNo index="0" />
+        </MouseCursorVisible>
+    </graphics>
+    <audio>
+        <EffectsVolume>
+            <k100 index="0" />
+        </EffectsVolume>
+        <MusicVolume>
+            <k100 index="0" />
+        </MusicVolume>
+    </audio>
+</settings>

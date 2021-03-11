@@ -1,8 +1,7 @@
 #pragma once
 
 namespace entities {
-	enum class MoveDirection
-	{
+	enum class MoveDirection {
 		kNowhere,
 		kRight,
 		kLeft,
@@ -23,13 +22,13 @@ namespace entities {
 		kInvulnerable
 	};
 
-	enum class Type
-	{
+	enum class Type {
 		kPlayer,
 		kEnemy,
 		kMovingPlatform,
 		kMovingVerticallyPlatform,
 		kCoin,
-		kExtraLife
+		kExtraLife,
+		kBoomerang
 	};
 };

@@ -3,6 +3,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include "Entity.h"
 #include "UIWidget.h"
+#include "World.h"
+#include "InputManager.h"
 
 class GameSettings {
 public:
@@ -26,16 +28,18 @@ public:
 
 class Game {
 private:
-	void ProcessEvents();
-	void Update(float dt);
-	void Render();
+	void update(float dt);
+	void render();
+	void processInput();
 
 private:
+	sf::Clock clock_;
 	sf::RenderWindow window_;
-	sf::RectangleShape player_;
-
+	World world_;
+	InputManager input_manager_;
+	bool is_paused_;
+	GameSettings settings_;
 public:
 	Game();
-	bool run();
-	void Run();
+	void run();
 };

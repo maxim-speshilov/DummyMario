@@ -1,20 +1,20 @@
 #include "Music.h"
 
-using namespace music;
-
 MusicPlayer::MusicPlayer() :
 	music_(),
 	music_id_(),
 	filenames_map_(),
 	volume_(100.f),
 	is_looped_(false) {
-	filenames_map_[music::ID::kMainTheme] = "music/MainTheme.ogg";
-	filenames_map_[music::ID::kLostALife] = "music/LostALife.ogg";
+
+	filenames_map_[Tracks::kMainTheme] = "music/MainTheme.ogg";
+	filenames_map_[Tracks::kLostALife] = "music/LostALife.ogg";
+	filenames_map_[Tracks::kGameOver] = "music/GameOver.ogg";
 }
 
-void MusicPlayer::play(ID music_id) {
+void MusicPlayer::play(Tracks music_id) {
+	music_id_ = music_id;
 	std::string  filename = filenames_map_[music_id];
-
 	if (!music_.openFromFile(filename))
 		throw std::runtime_error("music::MusicPlayer::play - Failed to open " + filenames_map_[music_id]);
 
@@ -42,7 +42,7 @@ void MusicPlayer::setVolume(float volume) {
 }
 
 
-sf::SoundSource::Status MusicPlayer::getStatus(ID music_id) const {
+sf::SoundSource::Status MusicPlayer::getStatus(Tracks music_id) const {
 	if (music_id == music_id_ && music_.getStatus() == sf::SoundSource::Playing)
 		return sf::SoundSource::Playing;
 	else

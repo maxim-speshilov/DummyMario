@@ -1,0 +1,17 @@
+<key_bindings>
+    <kThrowBoomerang>
+        <Space />
+    </kThrowBoomerang>
+    <kMoveLeft>
+        <Left />
+    </kMoveLeft>
+    <kMoveRight>
+        <Right />
+    </kMoveRight>
+    <kMoveUp>
+        <Up />
+    </kMoveUp>
+    <kMoveDown>
+        <Down />
+    </kMoveDown>
+</key_bindings>

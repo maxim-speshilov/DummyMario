@@ -1,53 +1,33 @@
 #include "Scene.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "MovingPlatform.h"
+#include "Pickup.h"
+#include <boost/range/join.hpp>
 
 using ObjectGroup = Scene::ObjectGroup;
 
-Type stringToType(std::string str) {
-	if (str == "Player")
-		return Type::kPlayer;
-	else if (str == "Enemy")
-		return Type::kEnemy;
-	else if (str == "MovingPlatform")
-		return Type::kMovingPlatform;
-	else if (str == "MovingVerticallyPlatform")
-		return Type::kMovingVerticallyPlatform;
-	else if (str == "Coin")
-		return Type::kCoin;
-	else if (str == "ExtraLife")
-		return Type::kExtraLife;
-	else if (str == "Solid")
-		return Type::kSolid;
-	else if (str == "EnemyBorder")
-		return Type::kEnemyBorder;
-	else if (str == "PlatformBorder")
-		return Type::kPlatformBorder;
-	else if (str == "SlopeRight")
-		return Type::kSlopeRight;
-	else if (str == "ExitPipe")
-		return Type::kExitPipe;
-	else if (str == "JumpBooster")
-		return Type::kJumpBooster;
-	else if (str == "JumpSuperBooster")
-		return Type::kJumpSuperBooster;
-	else if (str == "LeftPipe")
-		return Type::kLeftPipe;
-	else
-		throw std::logic_error("stringToType - got unknown type");
-}
-
-ObjectGroup::Type stringToGroupType(std::string str) {
-	if (str == "Entities")
-		return ObjectGroup::Type::Entities;
-	else if (str == "Pickups")
-		return ObjectGroup::Type::Pickups;
-	else if (str == "MapObjects")
-		return ObjectGroup::Type::MapObjects;
-	else
-		throw std::logic_error("stringToGroupType - got unknown type");
-}
-
 Scene::Scene() {
+	auto root = std::make_unique<SceneRoot>(*this);
+	addObjectToGroup(ObjectGroup::Type::Auxiliary, std::move(root));
 
+	textures_.load(Textures::kRunningPlayer, "textures/run_set.png");
+	textures_.load(Textures::kRollingPlayer, "textures/rolling_set.png");
+	textures_.load(Textures::kJumpingPlayer, "textures/jump_set.png");
+	textures_.load(Textures::kEnemy, "textures/enemy_set.png");
+	textures_.load(Textures::kBoomerang, "textures/boomerang.png");
+	textures_.load(Textures::kMovingPlatform, "textures/moving_platform.png");
+	textures_.load(Textures::kMovingVerticallyPlatform, "textures/moving_up_platform.png");
+	textures_.load(Textures::kCoin, "textures/coin.png");
+	textures_.load(Textures::kFullHeart, "textures/full_heart.png");
+	textures_.load(Textures::kVoidHeart, "textures/void_heart.png");
+
+	registerEntity<Player>(SceneObject::Type::kPlayer, textures_);
+	registerEntity<Enemy>(SceneObject::Type::kEnemy, textures_);
+	registerEntity<MovingPlatform>(SceneObject::Type::kMovingPlatform, textures_);
+	registerEntity<MovingPlatform>(SceneObject::Type::kMovingVerticallyPlatform, textures_);
+	registerEntity<Pickup>(SceneObject::Type::kCoin, textures_);
+	registerEntity<Pickup>(SceneObject::Type::kExtraLife, textures_);
 };
 
 sf::Vector2f Scene::getSize() const {
@@ -58,78 +38,121 @@ sf::Vector2f Scene::getTileSize() const {
 	return tile_size_;
 }
 
-
-std::list <SceneObject> Scene::getObjectsByType(Type type) const {
-	std::list <SceneObject> result;
-
-	for (const SceneObject& object : objects_)
-		if (object.type_ == type)
-			result.push_back(object);
-		
-	return result;
+void Scene::addObjectToGroup(ObjectGroup::Type type, SceneObject::Ptr object){
+	object_groups_[type].objects.push_back(std::move(object));
 }
 
-SceneObject Scene::getFirstObject(Type type) const {
-	auto found = std::find_if(objects_.begin(), objects_.end(), [&](SceneObject object) {
-		return (object.type_ == type);
-	});
+void Scene::checkObjectCollisions(std::set<std::pair<SceneObject*, SceneObject*>>& collision_pairs) {
+	for (auto& left : object_groups_[ObjectGroup::MapObjects].objects) {
+		for (auto& right : object_groups_[ObjectGroup::Entities].objects) {
+			if (collision(*left, *right)) 
+				collision_pairs.insert(std::minmax(left.get(), right.get()));
 
-	assert(found != objects_.end());
-	return *found;
+			if (collision(*right, *object_groups_[ObjectGroup::Type::Player].objects.back()) && !right->isDestroyed())
+				collision_pairs.insert(std::minmax(object_groups_[ObjectGroup::Type::Player].objects.back().get(), right.get()));
+		}
+
+		if (collision(*left, *object_groups_[ObjectGroup::Type::Player].objects.back()))
+			collision_pairs.insert(std::minmax(left.get(), object_groups_[ObjectGroup::Type::Player].objects.back().get()));
+	}
+
+	for (auto& left : object_groups_[ObjectGroup::Pickups].objects) {
+		if (collision(*left, *object_groups_[ObjectGroup::Type::Player].objects.back())) 
+			collision_pairs.insert(std::minmax(left.get(), object_groups_[ObjectGroup::Type::Player].objects.back().get()));
+	}
+
+	for (auto left_it = object_groups_[ObjectGroup::Entities].objects.begin();
+		left_it != object_groups_[ObjectGroup::Entities].objects.end(); ++left_it) {
+		for (auto right_it = std::next(left_it);
+			right_it != object_groups_[ObjectGroup::Entities].objects.end(); ++right_it) {
+			if (collision(**left_it, **right_it))
+				collision_pairs.insert(std::minmax((*left_it).get(), (*right_it).get()));
+		}
+	}
 }
 
-std::list<SceneObject> Scene::getObjectGroup(ObjectGroup::Type type) const {
-	return object_groups_[(int)type].objects;
-}
-
-std::list<SceneObject> Scene::getObjectsExcept(ObjectGroup::Type type) const {
-	std::list<SceneObject> result;
-	for (auto group : object_groups_)
-		if (group.type != type)
-			result.insert(result.end(), group.objects.begin(), group.objects.end());
-	return result;
-}
-
-std::list<SceneObject> Scene::getAllObjects() const {
-	return objects_;
+SceneObject::Ptr Scene::createEntity(SceneObject::Type entity_type) {
+	auto found = factories_.find(entity_type);
+	assert(found != factories_.end());
+	return found->second(entity_type);
 }
 
 void Scene::draw(sf::RenderTarget &rt, sf::RenderStates states) const {
-	rt.draw(background_sprite_);
+	rt.draw(background_sprite_, states);
 
-	for (auto object : objects_)
-		rt.draw(object);
+	for (auto pair : magic_enum::enum_entries<ObjectGroup::Type>()) {
+		if (pair.first == ObjectGroup::Type::MapObjects)
+			continue;
+
+		for (auto& object : object_groups_[pair.first].objects)
+			rt.draw(*object, states);
+	}
 }
 
-void Scene::update(float dt) {
-	for (SceneObject object : objects_)
-		object.update(dt);
+void Scene::drawGroup(ObjectGroup::Type type, sf::RenderTarget& rt, sf::RenderStates states) const {
+	//if (type == ObjectGroup::Type::MapObjects) {
+	//	rt.draw(background_sprite_, states);
+	//} else {
+	//	for (auto object : object_groups_[(int)type].objects)
+	//		rt.draw(object);
+	//}
 }
 
+void Scene::update(float dt, CommandQueue& commands) {
+	for (auto pair : magic_enum::enum_entries<ObjectGroup::Type>()) {
+		if (pair.first == ObjectGroup::Type::MapObjects)
+			continue;
+
+		for (auto& object : object_groups_[pair.first].objects)
+			object->update(dt, commands);
+	}
+}
+
+void Scene::updateGroup(ObjectGroup::Type type, float dt, CommandQueue& commands) {
+	for (auto& object : object_groups_[type].objects)
+		object->update(dt, commands);
+}
+
+void Scene::onCommand(const Command& command, float dt) {
+	for (auto& object : boost::range::join(object_groups_[ObjectGroup::Player].objects, object_groups_[ObjectGroup::Auxiliary].objects))
+		object->onCommand(command, dt);
+}
+
+void Scene::removeRemains() {
+	auto remains_begin = std::remove_if(object_groups_[ObjectGroup::Type::Entities].objects.begin(), object_groups_[ObjectGroup::Type::Entities].objects.end(),
+		std::mem_fn(&SceneObject::isMarkedForRemoval));
+	object_groups_[ObjectGroup::Type::Entities].objects.erase(remains_begin, object_groups_[ObjectGroup::Type::Entities].objects.end());
+
+	remains_begin = std::remove_if(object_groups_[ObjectGroup::Type::Pickups].objects.begin(), object_groups_[ObjectGroup::Type::Pickups].objects.end(),
+		std::mem_fn(&SceneObject::isMarkedForRemoval));
+	object_groups_[ObjectGroup::Type::Pickups].objects.erase(remains_begin, object_groups_[ObjectGroup::Type::Pickups].objects.end());
+}
 
 bool Scene::loadFromXml(const std::string &filename) {
 	TiXmlDocument levelFile(filename.data());
 	if (!levelFile.LoadFile())
 		std::runtime_error("Scene::loadFromXml - Failed to load level file " + filename);
 
-	TiXmlElement *map = levelFile.FirstChildElement("map");
+	TiXmlElement* map = levelFile.FirstChildElement("map");
+	auto size = sf::Vector2u(std::stoi(map->Attribute("width")), std::stoi(map->Attribute("height")));
+	auto tile_size = sf::Vector2f(std::stoi(map->Attribute("tilewidth")), std::stoi(map->Attribute("tileheight")));
 	size_ = sf::Vector2f(std::stoi(map->Attribute("width")), std::stoi(map->Attribute("height")));
 	tile_size_ = sf::Vector2f(std::stoi(map->Attribute("tilewidth")), std::stoi(map->Attribute("tileheight")));
-	background_texture_.create(size_.x * tile_size_.x, size_.y * tile_size_.y);
+	background_texture_.create(size.x * tile_size.x, size.y * tile_size.y);
 
-	TiXmlElement *tileset = map->FirstChildElement("tileset");
+	TiXmlElement* tileset = map->FirstChildElement("tileset");
 	int kFstTileGID = std::stoi(tileset->Attribute("firstgid"));
 	TiXmlDocument tilesFile("levels/tiles3.tsx");
 
 	if (!tilesFile.LoadFile())
 		std::runtime_error("Scene::loadFromXml - Failed to load tiles file");
 
-	TiXmlElement *tilesetData = tilesFile.FirstChildElement("tileset");
+	TiXmlElement* tilesetData = tilesFile.FirstChildElement("tileset");
 	const int kSpacing = std::stoi(tilesetData->Attribute("spacing"));
 	const int kNumberOfColumns = std::stoi(tilesetData->Attribute("columns"));
 	const int kNumberOfRows = std::stoi(tilesetData->Attribute("tilecount")) / kNumberOfColumns;
 
-	TiXmlElement *image = tilesetData->FirstChildElement("image");
+	TiXmlElement* image = tilesetData->FirstChildElement("image");
 	sf::Image tilesetImage;
 	const std::string kTilesetFileName = std::string("levels/") + std::string(image->Attribute("source"));
 
@@ -140,7 +163,7 @@ bool Scene::loadFromXml(const std::string &filename) {
 	kTilesetTexture.loadFromImage(tilesetImage);
 	kTilesetTexture.setSmooth(false);
 
-	std::vector <sf::IntRect> tileRects;
+	std::vector<sf::IntRect> tileRects;
 
 	for (int i = 0; i < kNumberOfRows; i++)
 		for (int j = 0; j < kNumberOfColumns; j++)
@@ -169,7 +192,7 @@ bool Scene::loadFromXml(const std::string &filename) {
 					int tile_gid = std::stoi(tileElement->Attribute("gid"));
 					sf::Sprite sprite;
 					sprite.setTexture(kTilesetTexture);
-					sprite.setPosition(j*tile_size_.x, i*tile_size_.y);
+					sprite.setPosition(j*tile_size.x, i*tile_size.y);
 					sprite.setTextureRect(tileRects[tile_gid - kFstTileGID]);
 					sprite.setColor(sf::Color(255, 255, 255, layer.opacity));
 					background_texture_.draw(sprite);
@@ -181,9 +204,8 @@ bool Scene::loadFromXml(const std::string &filename) {
 		layerElement = layerElement->NextSiblingElement("layer");
 	}
 
+	background_texture_.display();
 	background_sprite_.setTexture(background_texture_.getTexture());
-	background_sprite_.setOrigin(0.f, background_sprite_.getLocalBounds().height);
-	background_sprite_.setScale(1.f, -1.f);
 
 	/* ----- Getting objects -----*/
 
@@ -194,19 +216,25 @@ bool Scene::loadFromXml(const std::string &filename) {
 		while (objectgroupElement) {
 			TiXmlElement *objectElement = objectgroupElement->FirstChildElement("object");
 
-			ObjectGroup::Type kGroupType = stringToGroupType(objectgroupElement->Attribute("name"));
+			ObjectGroup::Type group_type = magic_enum::enum_cast<ObjectGroup::Type>(objectgroupElement->Attribute("name")).value();
 
 			while (objectElement) {
-				SceneObject object;
 				float width = 0.f, height = 0.f;
 
-				object.rect_.setPosition(strtod(objectElement->Attribute("x"), nullptr), strtod(objectElement->Attribute("y"), nullptr));
+				auto object = std::make_unique<SceneObject>();
+
+				SceneObject::Type type;
+
+				if (objectElement->Attribute("type") != NULL) 
+					type = magic_enum::enum_cast<SceneObject::Type>("k" + std::string(objectElement->Attribute("type"))).value();
+
+				if (group_type == ObjectGroup::Entities || group_type == ObjectGroup::Pickups)
+					object = createEntity(type);
+
+				object->type_ = type;
 
 				if (objectElement->Attribute("id") != NULL)
-					object.id_ = std::stoi(objectElement->Attribute("id"));
-
-				if (objectElement->Attribute("type") != NULL)
-					object.type_ = stringToType(objectElement->Attribute("type"));
+					object->id_ = std::stoi(objectElement->Attribute("id"));
 
 				if (objectElement->Attribute("width") != NULL)
 					width = std::stof(objectElement->Attribute("width"), nullptr);
@@ -214,21 +242,13 @@ bool Scene::loadFromXml(const std::string &filename) {
 				if (objectElement->Attribute("height") != NULL)
 					height = std::stof(objectElement->Attribute("height"), nullptr);
 
-				object.rect_.setSize(sf::Vector2f(width, height));
+				object->rect_.setPosition(strtod(objectElement->Attribute("x"), nullptr), strtod(objectElement->Attribute("y"), nullptr));
 
-				if (objectElement->FirstChildElement("properties")) {
-					TiXmlElement *propertiesElement = objectElement->FirstChildElement("properties");
-					TiXmlElement *propertyElement = propertiesElement->FirstChildElement("property");
+				if (group_type == ObjectGroup::MapObjects) 
+					object->rect_.setSize(sf::Vector2f(width, height));
 
-					while (propertyElement) {
-						object.properties_[propertyElement->Attribute("name")] = propertyElement->Attribute("value");
-						propertyElement = propertyElement->NextSiblingElement("property");
-					}
+				object_groups_[group_type].objects.push_back(std::move(object));
 
-				}
-
-				objects_.push_back(object);
-				object_groups_[(int)kGroupType].objects.push_back(object);
 				objectElement = objectElement->NextSiblingElement("object");
 			}
 

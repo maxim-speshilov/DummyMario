@@ -22,9 +22,12 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-
 #ifndef TINYXML_INCLUDED
 #define TINYXML_INCLUDED
+
+#ifndef TIXML_USE_STL
+#define TIXML_USE_STL
+#endif
 
 #ifdef _MSC_VER
 #pragma warning( push )

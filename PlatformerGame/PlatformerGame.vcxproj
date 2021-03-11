@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,45 +21,111 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationPlayer.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Boomerang.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Command.cpp" />
+    <ClCompile Include="CommandQueue.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Container.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameOverState.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="SceneRoot.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="KeyBindingsState.cpp" />
+    <ClCompile Include="Label.cpp" />
+    <ClCompile Include="LevelLoadingState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="MovingPlatform.cpp" />
     <ClCompile Include="Music.cpp" />
+    <ClCompile Include="OptionShiftingLabel.inl" />
+    <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="Pickup.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PreviewState.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="SettingsManager.cpp" />
+    <ClCompile Include="SettingsState.cpp" />
+    <ClCompile Include="SettingWorldState.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="tinystr.cpp" />
     <ClCompile Include="tinyxml.cpp" />
     <ClCompile Include="tinyxmlerror.cpp" />
     <ClCompile Include="tinyxmlparser.cpp" />
+    <ClCompile Include="TitleState.cpp" />
     <ClCompile Include="UIWidget.cpp" />
+    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationPlayer.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="BaseSettingsState.h" />
+    <ClInclude Include="Boomerang.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Category.h" />
+    <ClInclude Include="ColorIdentifiers.h" />
+    <ClInclude Include="CommandQueue.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="Container.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="Enum.h" />
+    <ClInclude Include="EntityIdentifiers.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="GameOverState.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="SceneRoot.h" />
+    <ClInclude Include="KeyBindingsState.h" />
+    <ClInclude Include="MenuState.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Label.h" />
+    <ClInclude Include="LevelLoadingState.h" />
+    <ClInclude Include="magic_enum.hpp" />
+    <ClInclude Include="OptionShiftingLabel.h" />
+    <ClInclude Include="ResourceLoader.h" />
+    <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MovingPlatform.h" />
     <ClInclude Include="Music.h" />
+    <ClInclude Include="PauseState.h" />
     <ClInclude Include="Pickup.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PreviewState.h" />
     <ClInclude Include="ResourceHolder.h" />
     <ClInclude Include="ResourceIdentifiers.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="SettingsIdentifiers.h" />
+    <ClInclude Include="SettingsManager.h" />
+    <ClInclude Include="SettingsState.h" />
+    <ClInclude Include="SettingsStatesIdentifiers.h" />
+    <ClInclude Include="SettingWorldState.h" />
     <ClInclude Include="Sound.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="StateIdentifiers.h" />
+    <ClInclude Include="StateStack.h" />
     <ClInclude Include="tinystr.h" />
     <ClInclude Include="tinyxml.h" />
+    <ClInclude Include="TitleState.h" />
     <ClInclude Include="UIWidget.h" />
+    <ClInclude Include="Utility.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BaseSettingsState.inl" />
+    <None Include="MenuState.inl" />
     <None Include="ResourceHolder.inl" />
+    <None Include="ResourceLoader.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -119,8 +185,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Program Files\SFML-2.5.1-windows-vc15-32-bit\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Program Files\SFML-2.5.1-windows-vc15-32-bit\SFML-2.5.1\include;D:\Program Files\boost_1_74_0\boost_1_74_0\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_DYNAMIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -17,11 +17,8 @@ private:
 public:
 	SoundPlayer();
 
-	void play(sounds::ID sound_id);
-
+	void play(Sounds sound_id);
 	void removeStoppedSounds();
-
 	void setVolume(float volume);
-
-	sf::SoundSource::Status getStatus(const sounds::ID sound_id) const;
+	sf::SoundSource::Status getStatus(const Sounds sound_id) const;
 };

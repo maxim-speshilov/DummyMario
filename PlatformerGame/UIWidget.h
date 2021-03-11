@@ -4,14 +4,18 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include "AnimationPlayer.h"
 #include "SceneObject.h"
+#include "Player.h"
 #include <list>
 #include <string>
+
+struct PlayerData;
 
 class UIWidget : public SceneObject {
 public:
 	enum class Type {
-		Lifes,
-		Score
+		kLifes,
+		kScore,
+		kBoomerangs
 	};
 
 protected:
@@ -20,6 +24,11 @@ protected:
 
 public:
 	UIWidget(Type type, sf::Vector2f);
+
+	virtual void update();
+	virtual void update(PlayerData&);
+
+	unsigned int getCategory() const override;
 };
 
 class Score : public UIWidget {
@@ -29,6 +38,8 @@ public:
 	void addScore(int);
 
 	void draw(sf::RenderTarget& rt, sf::RenderStates states) const override;
+	void update(float dt);
+	void update(PlayerData&) override;
 
 	void setScore(int);
 	int getScore() const;
@@ -47,11 +58,13 @@ public:
 
 	void draw(sf::RenderTarget& rt, sf::RenderStates states) const override;
 
-	void update();
+	void update(float dt);
+	void update(PlayerData&) override;
 
 	void addLifes(int);
 	void deleteLife();
 
+	void setCurrentLifes(int n_of_lifes);
 	int getCurrentLifes() const;
 
 	Lifes& operator+= (int);
@@ -62,6 +75,21 @@ private:
 	sf::Texture void_heart_;
 	sf::Texture full_heart_;
 	sf::Texture texture_;
+
 	unsigned int number_of_lifes_;
 	unsigned int current_number_of_lifes_;
+};
+
+class Boomerangs : public UIWidget {
+public:
+	Boomerangs(const TextureHolder&, const FontHolder&, sf::Vector2f);
+
+	void draw(sf::RenderTarget& rt, sf::RenderStates states) const override;
+	void update(PlayerData&) override;
+
+	void startCounter();
+
+private:
+	sf::Text n_of_left_;
+	std::vector<sf::Vertex> countdown_circle_;
 };

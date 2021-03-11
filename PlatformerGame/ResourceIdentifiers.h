@@ -3,43 +3,57 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 
-namespace textures {
-	enum class ID {
-		kRunningPlayer,
-		kRollingPlayer,
-		kJumpingPlayer,
-		kEnemy, 
-		kMovingPlatform,
-		kMovingVerticallyPlatform,
-		kCoin,
-		kFullHeart,
-		kVoidHeart
-	};
-}
+enum class Resources {
+	Sounds,
+	Textures, 
+	Tracks,
+	Fonts
+};
 
-namespace music {
-	enum class ID {
-		kMainTheme,
-		kLostALife
-	};
-}
+enum class Textures {
+	kPreviewBackground,
+	kTitleBackground,
+	kButtonNormal,
+	kRunningPlayer,
+	kRollingPlayer,
+	kJumpingPlayer,
+	kEnemy,
+	kBoomerang,
+	kMovingPlatform,
+	kMovingVerticallyPlatform,
+	kCoin,
+	kFullHeart,
+	kVoidHeart
+};
 
-namespace sounds {
-	enum class ID {
-		kJump,
-		kPickedACoin
-	};
-}
 
-namespace fonts {
-	enum class ID {
-		kMainFont
-	};
-}
+enum class Tracks {
+	kMainTheme,
+	kLostALife,
+	kGameOver
+};
+
+enum class Sounds {
+	kJump,
+	kPickedACoin
+};
+
+
+enum class Fonts {
+	kMain
+};
+
 
 template <typename Identifier, typename Resource>
 class ResourceHolder;
 
-typedef ResourceHolder<textures::ID, sf::Texture> TextureHolder;
-typedef ResourceHolder<fonts::ID, sf::Font>	FontHolder;
-typedef ResourceHolder<sounds::ID, sf::SoundBuffer> SoundBufferHolder;
+using TextureHolder = ResourceHolder<Textures, sf::Texture>;
+using FontHolder = ResourceHolder<Fonts, sf::Font>;
+using SoundBufferHolder = ResourceHolder<Sounds, sf::SoundBuffer>;
+
+
+template <typename Identifier, typename Holder>
+class ResourceLoader;
+
+using TextureLoader = ResourceLoader<Textures, TextureHolder>;
+using FontLoader =  ResourceLoader<Fonts, FontHolder>;

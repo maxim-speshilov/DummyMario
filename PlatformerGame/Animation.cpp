@@ -51,7 +51,7 @@ void Animation::update(float dt) {
 		sprite_.setTextureRect(reflex_frames_[(int)current_frame_]);
 }
 
-void Animation::update(sf::RectangleShape &rect, float dt) {
+void Animation::update(sf::RectangleShape& rect, float dt) {
 	if (!is_on_)
 		return;
 
@@ -61,6 +61,7 @@ void Animation::update(sf::RectangleShape &rect, float dt) {
 
 	if (current_frame_ > frames_.size())
 		current_frame_ -= (float)frames_.size();
+
 	if (!is_reflex_)
 		rect.setTextureRect(frames_[(int)current_frame_]);
 	else

@@ -6,10 +6,16 @@
 #include <string>
 #include <map>
 #include <array>
+#include <set>
+#include <boost/range/adaptor/filtered.hpp>
 #include "SceneObject.h"
+#include "SceneRoot.h"
+#include "ResourceIdentifiers.h"
+#include "ResourceHolder.h"
+#include "EntityIdentifiers.h"
 #include "tinyxml.h"
-
-
+#include <iostream>
+#include "Utility.h"
 
 using Type = SceneObject::Type;
 
@@ -22,16 +28,22 @@ public:
 	};
 
 	struct ObjectGroup {
-		enum class Type {
-			Entities,
+		enum Type {
+			Auxiliary,
+			Player,
 			MapObjects,
-			Pickups,
-			GroupCount
+			Entities,
+			Pickups
 		};
 
-		Type type;
-		std::list<SceneObject> objects;
+		std::list<SceneObject::Ptr> objects;
 	};
+
+public:
+	using GroupsArray = std::array<ObjectGroup, magic_enum::enum_count<ObjectGroup::Type>()>;
+	using EntityFactoriesMap = std::map<SceneObject::Type, std::function<SceneObject::Ptr(SceneObject::Type)>>;
+	using LayersList = std::list<TileLayer>;
+	using ObjectsList = std::list<SceneObject::Ptr>;
 
 public:
 	Scene();
@@ -39,26 +51,39 @@ public:
 	bool loadFromXml(const std::string &filename);
 
 	void draw(sf::RenderTarget &render_target, sf::RenderStates states) const override;
-	void update(float dt);
+	void drawGroup(ObjectGroup::Type type, sf::RenderTarget &rt, sf::RenderStates states) const;
 
-	std::list<SceneObject> getObjectsByType(Type type) const;
-	std::list<SceneObject> getObjectGroup(ObjectGroup::Type type) const;
-	std::list<SceneObject> getObjectsExcept(ObjectGroup::Type type) const;
-	std::list<SceneObject> getAllObjects() const;
-	SceneObject getFirstObject(Type type) const;
+	void update(float dt, CommandQueue& commands);
+	void updateGroup(ObjectGroup::Type type, float dt, CommandQueue& commands);
+
+	void onCommand(const Command& command, float dt);
+	void removeRemains(); 
+
+	void addObjectToGroup(ObjectGroup::Type type, SceneObject::Ptr object);
+	void checkObjectCollisions(std::set<std::pair<SceneObject*, SceneObject*>>& collision_pairs);
+
+	template<typename T>
+	inline void registerEntity(SceneObject::Type entity_type, TextureHolder& textures);
+	SceneObject::Ptr createEntity(SceneObject::Type entity_type);
+	
 	sf::Vector2f getTileSize() const;
 	sf::Vector2f getSize() const;
 
-private:
+public:
 	sf::Vector2f size_;
-	sf::Vector2f  tile_size_;
+	sf::Vector2f tile_size_;
 	sf::Sprite background_sprite_;
 	sf::RenderTexture background_texture_;
-	std::list<TileLayer> layers_;
-	std::list<SceneObject> objects_;
-	std::array<ObjectGroup, (size_t)ObjectGroup::Type::GroupCount> object_groups_;
+	TextureHolder textures_;
+	LayersList layers_;	
+	GroupsArray object_groups_;
+	EntityFactoriesMap factories_;
 };
 
 
-
-
+template<typename T>
+inline void Scene::registerEntity(SceneObject::Type type, TextureHolder& textures) {
+	factories_[type] = [&, this](SceneObject::Type typ) {
+		return SceneObject::Ptr(new T(typ, textures));
+	};
+} 

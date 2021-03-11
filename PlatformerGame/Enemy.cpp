@@ -1,42 +1,47 @@
 #include "Enemy.h"
 #include <iostream>
 
-Enemy::Enemy(Scene& level, sf::Vector2f position, int width, int height, entities::MoveDirection direction_) :
-	Entity(level, position, width, height) {
-	state_ = entities::State::kRunning;
-	type_ = entities::Type::kEnemy;
-	this->direction_ = direction_;
-
-	if (direction_ == entities::MoveDirection::kRight)
-		speed_ = sf::Vector2f(0.05, 0);
-	else
-		speed_ = sf::Vector2f(-0.05, 0);
+Enemy::Enemy(const TextureHolder& textures) :
+	Entity(SceneObject::Type::kEnemy, textures) {
+	setSpeed(sf::Vector2f(42.f, 0.f));
+	setSize(16, 16);
 }
 
-Enemy::Enemy(Scene &level, const TextureHolder &textures, sf::Vector2f position, int width, int height, entities::MoveDirection direction_) :
-	Entity(level, entities::Type::kEnemy, textures, position, width, height) {
+Enemy::Enemy(SceneObject::Type type, const TextureHolder& textures) :
+	Entity(SceneObject::Type::kEnemy, textures),
+	hp_(1.f),
+	destruction_dt_(0.f) {
+
+	assert(type == SceneObject::Type::kEnemy);
+	animation_player_.set(Animation::ID::kRunning);
+	
+	type_ = type;
 	state_ = entities::State::kRunning;
-	this->direction_ = direction_;
-
-	if (direction_ == entities::MoveDirection::kRight)
-		speed_ = sf::Vector2f(0.05, 0);
-	else
-		speed_ = sf::Vector2f(-0.05, 0);
-
-	rect_.setPosition(position);
-	rect_.setSize(sf::Vector2f(width, height));
+	direction_ = entities::MoveDirection::kRight;
+	rect_.setSize(sf::Vector2f(16, 16));
+	rect_.setTexture(&textures.get(Textures::kEnemy));
+	rect_.setTextureRect(sf::IntRect(0, 25, 16, 16));
+	setSpeed(sf::Vector2f(42.f, 0.f));
 }
 
-void Enemy::update(float time) {
+Enemy::Enemy() {
+}
+
+
+void Enemy::update(float dt, CommandQueue& commands) {
+	if (isDestroyed())
+		setState(entities::State::kDead);
 
 	if (state_ != entities::State::kDead) {
-		mapProcessing();
-		rect_.move(speed_ * time);
-	}
-	else if (!is_size_changed_) {
-		is_size_changed_ = true;
-		rect_.move(0.f, 8.f);
-		rect_.scale(1.f, 0.5f);
+		rect_.move(speed_ * dt);
+	} else  {
+		if (!is_size_changed_) {
+			is_size_changed_ = true;
+			rect_.move(0.f, 8.f);
+			rect_.scale(1.f, 0.5f);
+		}
+
+		destruction_dt_ += dt;
 	}
 	
 	switch (state_) {
@@ -50,23 +55,21 @@ void Enemy::update(float time) {
 		break;
 	}
 
-	animation_player_.update(rect_, time);
+	animation_player_.update(rect_, dt);
 }
 
-void Enemy::mapProcessing() {
+void Enemy::damage(float hp) {
+	hp_ -= hp_;
+}
 
-	for (auto object : level_objects_)
-		if (rect_.getGlobalBounds().intersects(object->rect_.getGlobalBounds())) {
-			if ((object->type_ == SceneObject::Type::kSolid) || (object->type_ == SceneObject::Type::kEnemyBorder)) {
-				if (direction_ == entities::MoveDirection::kRight) {
-					setPositionX(rect_, object->rect_.getPosition().x - rect_.getSize().x);
-					direction_ = entities::MoveDirection::kLeft;
-					speed_.x *= -1;
-				} else {
-					setPositionX(rect_, object->rect_.getPosition().x + object->rect_.getSize().x);
-					direction_ = entities::MoveDirection::kRight;
-					speed_.x *= -1;
-				}
-			}
-		}
+bool Enemy::isDestroyed() const {
+	return hp_ <= 0.f;
+}
+
+bool Enemy::isMarkedForRemoval() const {
+	return isDestroyed() && destruction_dt_ >= 0.5f;
+}
+
+unsigned int Enemy::getCategory() const {
+	return (unsigned int)category::Type::Enemy;
 }
