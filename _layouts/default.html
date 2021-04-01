@@ -23,10 +23,6 @@
 
         <p>{{ site.description | default: site.github.project_tagline }}</p>
 
-        {% if site.github.is_user_page %}
-        <p class="view"><a small href="{{ site.github.owner_url }}"><small>View My GitHub Profile</small></a small></p>
-        {% endif %}
-
         {% if site.show_downloads %}
         <ul class="downloads">
           <li><a href="{{ site.github.zip_url }}">Download <strong>ZIP File</strong></a></li>
@@ -44,7 +40,7 @@
       <footer>
         {% if site.github.is_project_page %}
 		<br>
-        <p><small>This project is maintained by </small> <a href="{{ site.github.owner_url }}"><small>{{ site.github.owner_name }}</small></a></p>
+        <p><small>This project is maintained by </small> <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
         {% endif %}
         <p><small>Hosted on GitHub Pages </small></p>
       </footer>
