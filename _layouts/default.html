@@ -41,6 +41,9 @@
       </section>
       <footer>
 		</br>
+		{% if site.github.is_project_page %}
+          <p><small>This project is maintained by </small><a small href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a small></p>
+        {% endif %}
         <p><small>Hosted on GitHub Pages </small></p>
       </footer>
     </div>
