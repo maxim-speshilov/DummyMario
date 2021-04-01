@@ -1,0 +1,31 @@
+I"‰<p><img src="/assets/img/its_mario.PNG" alt="IT'S-A ME, MARIO" /></p>
+
+<h3 id="go">Go!</h3>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="p">(</span><span class="n">window_</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">clock</span><span class="p">.</span><span class="n">restart</span><span class="p">().</span><span class="n">asSeconds</span><span class="p">();</span>
+    <span class="n">time</span> <span class="o">+=</span> <span class="n">dt</span><span class="p">;</span>
+	
+    <span class="k">while</span> <span class="p">(</span><span class="n">time</span> <span class="o">&gt;</span> <span class="n">time_per_frame_</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">time</span> <span class="o">-=</span> <span class="n">time_per_frame_</span><span class="p">;</span>
+        
+        <span class="n">processInput</span><span class="p">();</span>
+        <span class="n">update</span><span class="p">(</span><span class="n">time_per_frame_</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">state_stack_</span><span class="p">.</span><span class="n">isEmpty</span><span class="p">())</span>
+            <span class="n">window_</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="n">render</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="gameplay">Gameplay</h3>
+
+<div class="embed-container">
+  <iframe src="https://www.youtube.com/embed/XECoKr_yGUk" width="700" height="480" frameborder="0" allowfullscreen="">
+  </iframe>
+</div>
+
+<p><br /><br /></p>
+:ET
