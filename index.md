@@ -3,7 +3,7 @@ layout: default
 youtube_id: XECoKr_yGUk
 ---
 
-![IT'S-A ME, MARIO](/assets/img/its_mario.PNG)
+![IT'S-A ME, MARIO](/assets/img/its_mario.png)
 
 ### Go!
 
