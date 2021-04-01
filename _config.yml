@@ -2,6 +2,7 @@ title: DummyMario
 logo: /assets/img/logo.png
 description: Just for fun.
 show_downloads: true
+game_zip_url: https://github.com/maxim-speshilov/dummyMario/blob/master/DummyMario.zip
 google_analytics: false
 theme: jekyll-theme-minimal
 plugins:

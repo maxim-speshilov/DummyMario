@@ -52,13 +52,24 @@ a:hover, a:focus {
 
 a small {
   font-size:11px;
-  color:#777;
+  color:#000;
   margin-top:-0.3em;
   display:block;
 }
 
 a:hover small {
-  color:#777;
+  color:#e46385;
+}
+
+bigref {
+  font-size:20px;
+  color:#000;
+  margin-top:-0.3em;
+  display:block;
+}
+
+bigref:hover {
+  color:#e46385;
 }
 
 .wrapper {
@@ -126,11 +137,11 @@ ul.downloads {
   background: #f4f4f4;
   border-radius:5px;
   border:1px solid #e0e0e0;
-  width:270px;
+  width:320px;
 }
 
 .downloads li {
-  width:89px;
+  width:79px;
   float:left;
   border-right:1px solid #e0e0e0;
   height:40px;
@@ -155,12 +166,12 @@ ul.downloads {
 }
 
 .downloads a:hover, .downloads a:focus {
-  color:#675C5C;
+  color:#e46385;
   font-weight:bold;
 }
 
 .downloads ul a:active {
-  background-color:#f0f0f0;
+  background-color:#c0526f;
 }
 
 strong {
@@ -168,9 +179,9 @@ strong {
   font-weight:700;
 }
 
-.downloads li + li + li {
+.downloads li + li + li + li {
   border-right:none;
-  width:89px;
+  width:79px;
 }
 
 .downloads a strong {
