@@ -4,3 +4,5 @@ description: Just for fun.
 show_downloads: true
 google_analytics: false
 theme: jekyll-theme-minimal
+plugins:
+  - jekyll-seo-tag
