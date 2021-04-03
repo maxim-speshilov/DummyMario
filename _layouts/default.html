@@ -21,7 +21,7 @@
         {% if site.logo %}
           <img src="{{site.logo | relative_url}}" alt="Logo" />
         {% endif %}
-
+		
         <p>{{ site.description | default: site.github.project_tagline }}</p>
 
         {% if site.show_downloads %}
@@ -39,7 +39,8 @@
 
       </section>
       <footer>
-		</br>
+		<br />
+		<br />
 		{% if site.github.is_project_page %}
           <p><small>This project is maintained by </small><a small href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a small></p>
         {% endif %}
